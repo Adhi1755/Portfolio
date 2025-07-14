@@ -66,3 +66,8 @@ Build Portfolio from the source and install dependencies:
 
 ```bash
 git clone https://github.com/Adhi1755/Portfolio
+
+### Navigate to the project directory:
+
+```bash
+cd Portfolio
