@@ -108,7 +108,12 @@ const MainPage: React.FC = () => {
           <div className="w-60 h-60 md:w-60 md:h-60 rounded-full overflow-hidden">
             <div className="w-full h-full flex items-center justify-center text-4xl md:text-5xl">
               <Magnet padding={100} disabled={false} magnetStrength={15}>
-                  <Image src="./Avatar.png" alt="" />
+                  <Image
+                      src="/Avatar.png" 
+                      alt="Profile picture"
+                      width={300}
+                      height={400}
+                    />
               </Magnet>
               
             </div>

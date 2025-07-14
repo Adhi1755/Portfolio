@@ -21,28 +21,28 @@ interface ImageData {
 const images: ImageData[] = [
   {
     id: 1,
-    src: './images/Inventory Management System.png',
+    src: '/images/InventoryManagementSystem.png',
     alt: 'Inventory Management System',
     description: "Built using Flask, this project showcases my skills in full-stack web development, including user authentication, data visualization with Chart.js, responsive UI design, SQL database management, and real-time inventory tracking",
     link: 'https://github.com/Adhi1755/InventoryHub',
   },
   {
     id: 2,
-    src: './images/HeartPredict.png',
+    src: '/images/HeartPredict.png',
     alt: 'Heart Disease Prediction',
     description: "Heart Disease Prediction using machine learning models to identify at-risk patients based on health indicators. By using Python, Pandas, Scikit-learn, EDA, Model Training, Evaluation Metrics, Data Visualization, Logistic Regression, Random Forest.",
     link: 'https://github.com/Adhi1755/Heat_Diseases_Prediction',
   },
   {
     id: 3,
-    src: './images/Orrery-web-app.png',
+    src: '/images/Orrery-web-app.png',
     alt: 'Orrey Web App',
     description: "Developed for the NASA Space Apps Challenge 2024, this web app visually simulates the solar system using animated planetary orbits. Built with HTML, CSS, and JavaScript, it includes interactive planet details displayed via a custom toolbox positioned over the orbital paths.",
     link: 'https://github.com/Adhi1755/Orrery-web-app',
   },
   {
     id: 4,
-    src: './images/Portfolio.png',
+    src: '/images/Portfolio.png',
     alt: 'Portfolio',
     description: "A personal portfolio built using Next.js, Tailwind CSS, and GSAP animations to showcase my work and skills. This project helps me practice and strengthen my knowledge in modern web development, UI design, and interactive animations.",
     link: '#Home',
@@ -300,6 +300,8 @@ export default function Projects() {
               src={image?.src}
               className='sm:w-32 sm:h-20 w-full h-52 object-cover rounded-md mb-4'
               alt='mobileImg'
+              width={600}
+              height={400}
             />
           )}
           <div className="flex-1">
@@ -355,6 +357,8 @@ export default function Projects() {
         <Image
           src={activeImage.src}
           alt={activeImage.alt}
+          width={450}
+          height={250}
           className={`fixed dark:bg-gray-950 bg-white object-cover pointer-events-none z-10 w-[450px] h-[250px] rounded-lg`}
           style={{
             left: `${cursorPosition.x}px`,

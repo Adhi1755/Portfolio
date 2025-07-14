@@ -15,21 +15,21 @@ const ContactComponent = () => {
   const contentRef = useRef(null);
   const successRef = useRef(null);
   
-  const [formData, setFormData] = useState({
-    name: '',
-    reason: '', // This will be used as email
-    message: ''
-  });
+  const [formData, setFormData] = useState<Record<FieldName, string>>({
+  name: '',
+  reason: '',
+  message: ''
+});
 
-  const [focusedFields, setFocusedFields] = useState({
-    name: false,
-    reason: false,
-    message: false
-  });
+const [focusedFields, setFocusedFields] = useState<Record<FieldName, boolean>>({
+  name: false,
+  reason: false,
+  message: false
+});
 
   // New states for form submission
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState(null); // 'success', 'error', or null
+  const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(null);
   const [submitMessage, setSubmitMessage] = useState('');
 
   useEffect(() => {
@@ -162,43 +162,43 @@ const ContactComponent = () => {
       );
     }
   }, [submitStatus]);
+  type FieldName = "name" | "reason" | "message";
+  const handleInputChange = (field: FieldName, value: string) => {
+  setFormData(prev => ({
+    ...prev,
+    [field]: value
+  }));
+};
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
+const handleFocus = (field: FieldName) => {
+  setFocusedFields(prev => ({
+    ...prev,
+    [field]: true
+  }));
+};
 
-  const handleFocus = (field) => {
+const handleBlur = (field: FieldName) => {
+  if (!formData[field]) {
     setFocusedFields(prev => ({
       ...prev,
-      [field]: true
+      [field]: false
     }));
-  };
+  }
+};
 
-  const handleBlur = (field) => {
-    if (!formData[field]) {
-      setFocusedFields(prev => ({
-        ...prev,
-        [field]: false
-      }));
-    }
-  };
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    // Reset status
-    setSubmitStatus(null);
-    setSubmitMessage('');
+  // Reset status
+  setSubmitStatus(null);
+  setSubmitMessage('');
 
-    // Validate form data
-    if (!formData.name.trim() || !formData.reason.trim() || !formData.message.trim()) {
-      setSubmitStatus('error');
-      setSubmitMessage('Please fill in all fields');
-      return;
-    }
+  // Validate form data
+  if (!formData.name.trim() || !formData.reason.trim() || !formData.message.trim()) {
+    setSubmitStatus('error');
+    setSubmitMessage('Please fill in all fields');
+    return;
+  }
 
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -391,7 +391,7 @@ const ContactComponent = () => {
                     onBlur={() => handleBlur('message')}
                     disabled={isSubmitting}
                     required
-                    rows="3"
+                    rows={5}
                     className="w-full bg-transparent border-b-2 border-gray-300 dark:border-gray-600 focus:border-black dark:focus:border-white outline-none py-3 sm:py-4 text-base sm:text-lg text-black dark:text-white transition-colors duration-300 resize-none disabled:opacity-50"
                   />
                 </div>

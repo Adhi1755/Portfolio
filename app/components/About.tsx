@@ -16,7 +16,7 @@ const AboutMeContainer = () => {
   const secondDivRef = useRef(null);
   const skillsContainerRef = useRef(null);
   const skillsHeadingRef = useRef(null);
-  const skillsItemsRef = useRef([]);
+ const skillsItemsRef = useRef<(HTMLDivElement | null)[]>([]);
 
   const skills = [
     "Python",
@@ -245,7 +245,7 @@ const AboutMeContainer = () => {
         {/* Second Div - 1 column on desktop, full width on mobile */}
         <div ref={secondDivRef} className="col-span-1 md:col-span-2">
   <div className="h-full rounded-lg flex items-center justify-center">
-    <div className='w-full relative h-full group mx-auto dark:bg-black bg-white dark:border-1 border rounded-md dark:text-white text-black flex flex-col'>
+    <div className='w-full relative h-full group mx-auto dark:bg-black bg-white border-1 border-gray-300 dark:border-gray-400 rounded-2xl dark:text-white text-black flex flex-col'>
       {/* Image container - now fills available height dynamically */}
       <div className='w-full rounded-t-md flex-grow overflow-hidden transition-all duration-300 relative min-h-0'>
         <div className='absolute inset-0 group-hover:scale-95 transition-all duration-300'>
@@ -311,7 +311,9 @@ const AboutMeContainer = () => {
               {skills.map((skill, index) => (
                 <div
                   key={index}
-                  ref={el => skillsItemsRef.current[index] = el}
+                  ref={(el) => {
+                      skillsItemsRef.current[index] = el;
+                    }}
                   className="px-5 sm:px-6 py-2.5 sm:py-2.5 border border-black  dark:border-zinc-500 text-gray-700 dark:text-gray-400 bg-transparent hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black hover:shadow-[0_0_20px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300 rounded-full font-light tracking-wide text-sm sm:text-base"
                 >
                  {skill}
