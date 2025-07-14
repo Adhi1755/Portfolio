@@ -66,8 +66,32 @@ Build Portfolio from the source and install dependencies:
 
 ```bash
 git clone https://github.com/Adhi1755/Portfolio
-
+```
 ### Navigate to the project directory:
 
 ```bash
 cd Portfolio
+```
+
+2. **Install the dependencies:
+###Using npm:
+
+```bash
+npm install
+```
+3. **Usage
+###Run the project with:
+
+Using npm:
+
+```bash
+npm start
+```
+4.**Testing
+###Portfolio uses the {test_framework} test framework. Run the test suite with:
+
+###Using npm:
+
+```bash
+npm test
+```
