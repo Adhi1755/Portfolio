@@ -1,9 +1,9 @@
 'use client'
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import { User, FolderOpen, FileText, Mail, Sun, Moon } from 'lucide-react';
 import Typewriter from 'typewriter-effect';
 import Magnet from './Magnet/Magnet'
+import Image from 'next/image';
 
 const MainPage: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -72,32 +72,6 @@ const MainPage: React.FC = () => {
     return () => ctx.revert();
   }, []);
 
-  const handleButtonHover = (element: HTMLElement) => {
-    gsap.to(element, {
-      scale: 1.05,
-      duration: 0.2,
-      ease: "power2.out"
-    });
-  };
-
-  const handleButtonLeave = (element: HTMLElement) => {
-    gsap.to(element, {
-      scale: 1,
-      duration: 0.2,
-      ease: "power2.out"
-    });
-  };
-
-  const handleButtonClick = (element: HTMLElement) => {
-    gsap.to(element, {
-      scale: 0.95,
-      duration: 0.1,
-      ease: "power2.out",
-      yoyo: true,
-      repeat: 1
-    });
-  };
-
   return (
     <div id='home' className="min-h-screen transition-colors duration-300 text-black dark:bg-black dark:text-white overflow-hidden">
       {/* Main Content */}
@@ -107,7 +81,7 @@ const MainPage: React.FC = () => {
         style={{ opacity: 0 }}
       >
         {/* Name */}
-        <p ref={greetingRef} className="text-xltext-gray-700  font-light md:text-2xl text-center">Heyy, I'm</p>
+        <p ref={greetingRef} className="text-xltext-gray-700  font-light md:text-2xl text-center">Heyy, I&apos;mm</p>
         <h1
           ref={nameRef}
           className="text-5xl md:text-6xl  font-medium mb-1 text-center"
@@ -134,7 +108,7 @@ const MainPage: React.FC = () => {
           <div className="w-60 h-60 md:w-60 md:h-60 rounded-full overflow-hidden">
             <div className="w-full h-full flex items-center justify-center text-4xl md:text-5xl">
               <Magnet padding={100} disabled={false} magnetStrength={15}>
-                  <img src="./Avatar.png" alt="" />
+                  <Image src="./Avatar.png" alt="" />
               </Magnet>
               
             </div>

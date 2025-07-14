@@ -3,13 +3,6 @@ import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Image from 'next/image';
-import {
-  ArrowBigDown,
-  ArrowRight,
-  ChevronRight,
-  Heart,
-  MoveUpRight,
-} from 'lucide-react'
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);

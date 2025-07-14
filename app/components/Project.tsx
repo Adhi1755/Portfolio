@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useMediaQuery } from '@react-hook/media-query';
 import { MoveUpRight } from 'lucide-react';
 import React, { useState,  useCallback,  } from 'react';
+import Image from 'next/image';
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger) 
 
@@ -263,7 +264,7 @@ export default function Projects() {
               RECENT WORKS
             </h1>
             <p ref={descriptionRef} className="text-gray-700 dark:text-gray-400  font-extralight text-xl mb-8 ">
-              Here are some of the projects I’ve worked on recently, combining what I’ve learned in AI, web development, and problem-solving to create real-world solutions.
+              Here are some of the projects I&apos;mve worked on recently, combining what I&apos;mve learned in AI, web development, and problem-solving to create real-world solutions.
             </p>
           </div>
           {/* GitHub Button */}
@@ -295,7 +296,7 @@ export default function Projects() {
           onMouseEnter={() => handleImageHover(image)}
         >
           {!isDesktop && (
-            <img
+            <Image
               src={image?.src}
               className='sm:w-32 sm:h-20 w-full h-52 object-cover rounded-md mb-4'
               alt='mobileImg'
@@ -351,7 +352,7 @@ export default function Projects() {
         </div>
       ))}
       {isDesktop && activeImage && (
-        <img
+        <Image
           src={activeImage.src}
           alt={activeImage.alt}
           className={`fixed dark:bg-gray-950 bg-white object-cover pointer-events-none z-10 w-[450px] h-[250px] rounded-lg`}

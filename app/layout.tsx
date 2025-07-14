@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import localFont from 'next/font/local'
-import Header from "./components/Navigation";
-import Footerbar from "./components/Footer";
- 
+import Header from "./components/Navigation"; 
 const outfit = localFont({
   src: [
     { path: './fonts/Outfit/Outfit-Thin.ttf', weight: '100', style: 'normal' },

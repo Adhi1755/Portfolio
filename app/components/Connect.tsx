@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import { Clock, Mail, Phone, Github, Linkedin, Instagram, Twitter, CheckCircle, AlertCircle } from 'lucide-react';
+import { Clock, Mail, Phone, Github, Linkedin, Instagram, CheckCircle, AlertCircle } from 'lucide-react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 // Register ScrollTrigger plugin
