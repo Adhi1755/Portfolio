@@ -264,7 +264,7 @@ export default function Projects() {
               RECENT WORKS
             </h1>
             <p ref={descriptionRef} className="text-gray-700 dark:text-gray-400  font-extralight text-xl mb-8 ">
-              Here are some of the projects I&apos;mve worked on recently, combining what I&apos;mve learned in AI, web development, and problem-solving to create real-world solutions.
+              Here are some of the projects I have  worked on recently, where I combined my knowledge in AI, web development, and problem-solving to build practical, real-world solutions.
             </p>
           </div>
           {/* GitHub Button */}
