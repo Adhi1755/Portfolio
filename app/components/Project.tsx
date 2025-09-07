@@ -258,12 +258,12 @@ export default function Projects() {
     <div ref={containerRef} id="projects" className="min-h-screen mt-0 mb-0 bg-white p-4 md:p-6 lg:p-8 flex justify-center items-center overflow-hidden dark:bg-black ">
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 max-w-7xl mx-auto">
         {/* Projects Section */}
-        <div id='card1' ref={card1Ref}  className="bg-white dark:bg-black   border rounded-2xl md:border-0 md:rounded-[0px] md:border-r-2  p-8 flex flex-col justify-between min-h-[500px] lg:min-h-[600px] lg:col-span-2">
+        <div id='card1' ref={card1Ref}  className=" bg-white dark:bg-black   border rounded-2xl md:border-0 md:rounded-[0px] md:border-r-2 dark:border-white/10 p-8 flex flex-col justify-between min-h-[500px] lg:min-h-[600px] lg:col-span-2">
           <div>
-            <h1 ref={titleRef} className="text-4xl  md:text-5xl font-light text-black mb-8 dark:text-white">
+            <h1 ref={titleRef} className="text-4xl  md:text-5xl font-light text-black mb-8 dark:text-white ">
               RECENT WORKS
             </h1>
-            <p ref={descriptionRef} className="text-gray-700 dark:text-gray-400  font-extralight text-xl mb-8 ">
+            <p ref={descriptionRef} className="text-gray-700 dark:text-gray-400  font-extralight text-xl mb-8">
               Here are some of the projects I have  worked on recently, where I combined my knowledge in AI, web development, and problem-solving to build practical, real-world solutions.
             </p>
           </div>

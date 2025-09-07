@@ -208,7 +208,7 @@ const AboutMeContainer = () => {
       <div className="grid grid-cols-1 md:grid-cols-5 gap-6 grid.lightModeColors max-w-7xl mx-auto">
 
         {/* First Div - 3 columns on desktop, full width on mobile */}
-        <div ref={firstDivRef} className="col-span-1 md:col-span-3">
+        <div ref={firstDivRef} className="col-span-1 md:col-span-3 z-50">
           {/* About Me Section - Centered */}
           <div className="space-y-8 ml-5 lg:text-left">
 
@@ -275,9 +275,9 @@ const AboutMeContainer = () => {
         </div>
 
         {/* Second Div - 1 column on desktop, full width on mobile */}
-        <div ref={secondDivRef} className="col-span-1 md:col-span-2">
+        <div ref={secondDivRef} className="col-span-1 md:col-span-2 z-40">
           <div className="h-full rounded-lg flex items-center justify-center">
-            <div className='w-full relative h-full group mx-auto dark:bg-black bg-white border-1 border-gray-300 dark:border-gray-400 rounded-2xl dark:text-white text-black flex flex-col'>
+            <div className='w-full relative h-full group mx-auto backdrop-blur-4xl z-40 bg-white/5 border border-gray-300 dark:border-gray-400 rounded-2xl dark:text-white text-black flex flex-col'>
               {/* Image container - now fills available height dynamically */}
               <div className='w-full rounded-t-md flex-grow overflow-hidden transition-all duration-300 relative min-h-0'>
                 <div className='absolute inset-0 group-hover:scale-95 transition-all duration-300'>
@@ -334,7 +334,7 @@ const AboutMeContainer = () => {
         </div>
 
         {/* skills section */}
-        <div ref={skillsContainerRef} className="col-span-1 md:col-span-5 mt-8 md:mt-12">
+        <div ref={skillsContainerRef} className="col-span-1 md:col-span-5 mt-8 md:mt-12 z-10">
           <div className="max-w-7xl">
             <div className="mb-12 sm:mb-16 lg:mb-20 ml-5">
               <h3 ref={skillsHeadingRef} className="text-4xl   md:text-5xl font-light text-black mb-8 dark:text-white">
@@ -353,7 +353,7 @@ const AboutMeContainer = () => {
                     {group.items.map((skill, index) => (
                       <div
                         key={index}
-                        className="skill-item px-5 sm:px-6 py-2.5 sm:py-2.5 border border-black  dark:border-zinc-500 text-gray-700 dark:text-gray-400 bg-transparent hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black hover:shadow-[0_0_20px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300 rounded-full font-light tracking-wide text-sm sm:text-base"
+                        className="skill-item px-5 sm:px-6 py-2.5 sm:py-2.5 border backdrop-blur-4xl bg-transparent border-black  dark:border-zinc-500 text-gray-700 dark:text-gray-400  hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black hover:shadow-[0_0_20px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300 rounded-full font-light tracking-wide text-sm sm:text-base"
                       >
                         {skill}
                       </div>

@@ -11,12 +11,13 @@ import SplashCursor from './components/SplashCursor'
 export default function Home() {
   return (
     <>
-    <SplashCursor/>
+    
     <MainPage/>
     <AboutMeContainer/>
     <Projects/>
     <ContactComponent/>
     <Footerbar/>
+    <SplashCursor/>
 </>
     
   );

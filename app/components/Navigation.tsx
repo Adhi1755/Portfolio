@@ -170,7 +170,7 @@ export default function Header() {
   if (!mounted) {
     return (
       <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-4xl px-4">
-        <div className="backdrop-blur-md bg-white/20 dark:bg-black/20 rounded-full border-1 border-zinc-200 dark:border-zinc-50/12 px-6 py-3">
+        <div className="backdrop-blur-4xl bg-white/20 dark:bg-black/20 rounded-full border-1 border-zinc-200 dark:border-zinc-50/12 px-6 py-3">
           <div className="flex items-center justify-between">
             <nav className="flex-1 flex justify-center">
               <ul className="flex space-x-4 md:space-x-8">
