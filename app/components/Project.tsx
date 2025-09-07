@@ -292,13 +292,13 @@ export default function Projects() {
           ref={(el) => {
             if (el) projectItemsRef.current[index] = el;
           }}
-          className={`p-4 cursor-pointer relative sm:flex items-center justify-between border border-gray-200 dark:border-gray-700 lg:border-none rounded-lg shadow-sm hover:shadow-md lg:shadow-none lg:hover:shadow-none transition-shadow duration-300 mb-4 lg:mb-2`}
+          className={`p-4 cursor-pointer relative sm:flex items-center justify-between border border-gray-200 dark:border-gray-700 lg:border-none rounded-2xl shadow-sm hover:shadow-md lg:shadow-none lg:hover:shadow-none transition-shadow duration-300 mb-4 lg:mb-2`}
           onMouseEnter={() => handleImageHover(image)}
         >
           {!isDesktop && (
             <Image
               src={image?.src}
-              className='sm:w-32 sm:h-20 w-full h-52 object-cover rounded-md mb-4'
+              className='sm:w-32 sm:h-20 w-full h-52 object-cover rounded-2xl mb-4'
               alt='mobileImg'
               width={600}
               height={400}
@@ -328,7 +328,7 @@ export default function Projects() {
               {/* Mobile Button */}
               <button
                 onClick={() => handleProjectClick(image)}
-                className="sm:hidden w-full px-4 py-2 mt-3 border border-gray-400  text-gray-500 dark:text-gray-400 bg-white dark:bg-black rounded-3xl hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black active:scale-95 transition-all duration-200 font-medium text-sm"
+                className="sm:hidden w-full px-4 py-2 mt-3 border border-gray-200 dark:border-gray-700 text-gray-300 dark:text-gray-400 bg-white dark:bg-black rounded-2xl hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black active:scale-95 transition-all duration-200  text-sm font-light"
               >
                 View Project
               </button>
