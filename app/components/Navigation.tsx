@@ -191,7 +191,7 @@ export default function Header() {
   }
 
   return (
-    <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-4xl px-4">
+    <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-150 w-full max-w-4xl px-4">
       <div
         ref={headerRef}
         className="backdrop-blur-md bg-white/20 dark:bg-black/20 rounded-full border-1 border-zinc-200 dark:border-zinc-50/12 px-6 py-3"
