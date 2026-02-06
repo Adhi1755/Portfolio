@@ -22,7 +22,7 @@ const images: ImageData[] = [
   {
     id: 1,
     src: '/images/InventoryManagementSystem.png',
-    alt: 'Inventory Management System',
+    alt: 'EmbedMindAI',
     description: "Built using Flask, this project showcases my skills in full-stack web development, including user authentication, data visualization with Chart.js, responsive UI design, SQL database management, and real-time inventory tracking",
     link: 'https://github.com/Adhi1755/InventoryHub',
   },
