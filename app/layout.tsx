@@ -36,9 +36,7 @@ export default function RootLayout({
       <body
         className={`${outfit.variable} antialiased`}
       >
-        <Header/>
         {children}
-        
       </body>
     </html>
   );

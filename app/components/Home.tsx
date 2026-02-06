@@ -4,6 +4,7 @@ import { gsap } from 'gsap';
 import Typewriter from 'typewriter-effect';
 import Magnet from './Magnet/Magnet'
 import Image from 'next/image';
+import Link from 'next/link';
 
 const MainPage: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -13,6 +14,12 @@ const MainPage: React.FC = () => {
   const profileRef = useRef<HTMLDivElement>(null);
   const descriptionRef = useRef<HTMLParagraphElement>(null);
   const buttonRef = useRef<HTMLParagraphElement>(null);
+  const navItems = [
+  { name: "About", href: "/about" },
+  { name: "Projects", href: "/projects" },
+  { name: "Achievements", href: "/certificates" },
+  { name: "Contact", href: "/contact" },
+];
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -123,14 +130,30 @@ const MainPage: React.FC = () => {
         {/* Description */}
         <p
           ref={descriptionRef}
-          className="text-xl font-extralight md:text-2xl text-center max-w-4xl text-gray-700 dark:text-gray-400 z-10"
+          className="text-xl font-extralight mb-1 md:text-2xl text-center max-w-4xl text-gray-700 dark:text-gray-400 z-10"
         >
           Passionate about AI & ML, currently exploring Generative AI and combining it with web development to build smart, impactful solutions
         </p>
+    <div className="flex justify-center gap-3 mb-3">
+      {navItems.map((item) => (
+        <Link
+          key={item.name}
+          href={item.href}
+          className="px-4 py-1.5 my-1 z-10 rounded-full text-sm
+            backdrop-blur-md bg-white/30 dark:bg-black/30
+            border border-zinc-200 dark:border-zinc-50/20
+            text-zinc-800 dark:text-zinc-200
+            hover:bg-white/50 dark:hover:bg-black/50
+            hover:scale-105 transition"
+        >
+          {item.name}
+        </Link>
+      ))}
+    </div>
         <div className="flex items-center gap-3 w-full max-w-3xl mx-auto
   backdrop-blur-md bg-white/20 dark:bg-black/20
   rounded-full border border-zinc-200 dark:border-zinc-50/20
-  px-3 py-3 my-10 z-10">
+  px-3 py-3 my-1 z-10">
 
   {/* Resume Icon with Tooltip */}
   <div className="relative group">
