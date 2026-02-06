@@ -35,7 +35,7 @@ const AboutMeContainer = () => {
 
   {
     category: "Frontend & Frameworks",
-    items: ["React.js", "Next.js", "React Native", "HTML", "CSS", "JavaScript", "TypeScript", "Tailwind CSS"],
+    items: ["React.js", "Next.js", "React Native", "HTML", "CSS3", "JavaScript", "TypeScript", "Tailwind CSS"],
   },
 
   {
