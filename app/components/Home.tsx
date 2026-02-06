@@ -127,44 +127,92 @@ const MainPage: React.FC = () => {
         >
           Passionate about AI & ML, currently exploring Generative AI and combining it with web development to build smart, impactful solutions
         </p>
-         <div ref={buttonRef} className='flex items-center justify-between mt-8 space-x-3 z-50'>
-            <div className="pt-1">
-        <button
-        onClick={() => {
-    const section = document.getElementById("contact");
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
-    }
-  }}
-          
-          className=" z-50 backdrop-blur-4xl px-5 sm:px-6 py-2.5 sm:py-3 border border-black dark:border-zinc-500 text-gray-700 dark:text-gray-400 bg-transparent hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black hover:shadow-[0_0_20px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300 rounded-full font-light tracking-wide text-sm sm:text-base flex items-center gap-2"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-          </svg>
-          Contact
-        </button>
-      </div>
+        <div className="flex items-center gap-3 w-full max-w-3xl mx-auto
+  backdrop-blur-md bg-white/20 dark:bg-black/20
+  rounded-full border border-zinc-200 dark:border-zinc-50/20
+  px-3 py-3 my-10 z-10">
 
-      {/* Resume Download Button */}
-      <div className="pt-1">
-        <button
-        onClick={() => {
-    const section = document.getElementById("contact");
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
-    }
-  }}
-          
-          className="px-5 sm:px-6 py-2.5 sm:py-3 border border-black dark:border-zinc-500 text-gray-700 dark:text-gray-400 bg-transparent hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black hover:shadow-[0_0_20px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300 rounded-full font-light tracking-wide text-sm sm:text-base flex items-center gap-2"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
-          </svg>
-          Resume
-        </button>
-      </div>
-         </div>
+  {/* Resume Icon with Tooltip */}
+  <div className="relative group">
+    <a
+      href="/resume.pdf"
+      download
+      className="flex items-center justify-center
+        w-10 h-10 rounded-full border border-zinc-200
+       
+        text-black dark:text-white
+        hover:scale-110 transition"
+    >
+      {/* Document SVG */}
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        className="w-5 h-5"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+        />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M14 2v6h6"
+        />
+      </svg>
+    </a>
+
+    {/* Tooltip */}
+    <span
+      className="absolute left-1/2 -translate-x-1/2 top-12
+        whitespace-nowrap rounded-md
+        bg-zinc-900 text-white text-xs
+        px-2 py-1
+        opacity-0 scale-95
+        group-hover:opacity-100 group-hover:scale-100
+        transition pointer-events-none"
+    >
+      Resume
+    </span>
+  </div>
+
+  {/* Input */}
+  <input
+    type="text"
+    placeholder="Ask anything about adhi"
+    className="flex-1 bg-transparent outline-none
+      text-zinc-900 dark:text-zinc-100
+      placeholder-zinc-500 dark:placeholder-zinc-400"
+  />
+
+  {/* Arrow Button */}
+  <button
+    className="flex items-center justify-center
+      w-10 h-10 rounded-full
+      bg-zinc-900 dark:bg-white
+      text-white dark:text-black
+      hover:scale-110 transition"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={2}
+      stroke="currentColor"
+      className="w-5 h-5"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M5 12h14m-6-6l6 6-6 6"
+      />
+    </svg>
+  </button>
+
+</div>
       
 
       </div>
