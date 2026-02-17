@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import localFont from 'next/font/local'
-import Header from "./components/Navigation"; 
+import Header from "./components/Navigation";
 const outfit = localFont({
   src: [
     { path: './fonts/Outfit/Outfit-Thin.ttf', weight: '100', style: 'normal' },
@@ -25,6 +25,8 @@ export const metadata: Metadata = {
   description: "Adithya's Portfolio using Next.js",
 };
 
+import SmoothScroll from "./components/SmoothScroll";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -32,13 +34,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      
+
       <body
         className={`${outfit.variable} antialiased`}
       >
-        <Header/>
+        <SmoothScroll />
+        <Header />
         {children}
-        
+
       </body>
     </html>
   );
