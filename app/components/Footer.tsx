@@ -7,7 +7,7 @@ export default function Footerbar() {
       {/* Copyright and Designer Credit */}
       <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-center sm:text-left">
         <p className="text-sm text-black dark:text-white">
-          © 2025 Adithya. All rights reserved.
+          © 2026 Adithya. All rights reserved.
         </p>
         <span className="hidden sm:inline text-black/50 dark:text-white/50">•</span>
         <p className="text-xs text-black/70 dark:text-white/70">
