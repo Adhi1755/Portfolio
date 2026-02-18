@@ -5,6 +5,40 @@ import Typewriter from 'typewriter-effect';
 import Magnet from './Magnet/Magnet'
 import Image from 'next/image';
 import Link from 'next/link';
+import { ArrowRight, Smile, Briefcase, Layers, Sparkles, UserSearch } from 'lucide-react';
+
+const navItems = [
+  {
+    name: "Me",
+    href: "/about",
+    icon: <Smile size={26} strokeWidth={1.5} className="text-teal-500" />,
+    color: "bg-teal-50 dark:bg-teal-950",
+  },
+  {
+    name: "Projects",
+    href: "/projects",
+    icon: <Briefcase size={26} strokeWidth={1.5} className="text-green-600" />,
+    color: "bg-green-50 dark:bg-green-950",
+  },
+  {
+    name: "Skills",
+    href: "/skills",
+    icon: <Layers size={26} strokeWidth={1.5} className="text-purple-500" />,
+    color: "bg-purple-50 dark:bg-purple-950",
+  },
+  {
+    name: "Fun",
+    href: "/fun",
+    icon: <Sparkles size={26} strokeWidth={1.5} className="text-pink-500" />,
+    color: "bg-pink-50 dark:bg-pink-950",
+  },
+  {
+    name: "Contact",
+    href: "/contact",
+    icon: <UserSearch size={26} strokeWidth={1.5} className="text-orange-500" />,
+    color: "bg-orange-50 dark:bg-orange-950",
+  },
+];
 
 const MainPage: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -13,97 +47,61 @@ const MainPage: React.FC = () => {
   const typewriterRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const descriptionRef = useRef<HTMLParagraphElement>(null);
-  const buttonRef = useRef<HTMLParagraphElement>(null);
-  const navItems = [
-    { name: "About", href: "/about" },
-    { name: "Projects", href: "/projects" },
-    { name: "Achievements", href: "/certificates" },
-    { name: "Contact", href: "/contact" },
-  ];
+  const searchBarRef = useRef<HTMLDivElement>(null);
+  const navCardsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Set initial states
-      gsap.set([greetingRef.current, nameRef.current, typewriterRef.current, profileRef.current, descriptionRef.current, buttonRef.current], {
-        opacity: 0,
-        y: 20
-      });
+      gsap.set(
+        [
+          greetingRef.current,
+          nameRef.current,
+          typewriterRef.current,
+          profileRef.current,
+          descriptionRef.current,
+          searchBarRef.current,
+          navCardsRef.current,
+        ],
+        { opacity: 0, y: 20 }
+      );
 
-      // Create timeline for staggered animations
       const tl = gsap.timeline();
 
-      tl.to(containerRef.current, {
-        opacity: 1,
-        duration: 0.6,
-        ease: "power2.out"
-      })
-        .to(greetingRef.current, {
-          opacity: 1,
-          y: 0,
-          duration: 0.5,
-          ease: "power2.out"
-        }, "-=0.4")
-        .to(nameRef.current, {
-          opacity: 1,
-          y: 0,
-          duration: 0.5,
-          ease: "power2.out"
-        }, "-=0.4")
-        .to(typewriterRef.current, {
-          opacity: 1,
-          y: 0,
-          duration: 0.5,
-          ease: "power2.out"
-        }, "-=0.4")
-        .to(profileRef.current, {
-          opacity: 1,
-          y: 0,
-          duration: 0.5,
-          ease: "power2.out"
-        }, "-=0.4")
-        .to(descriptionRef.current, {
-          opacity: 1,
-          y: 0,
-          duration: 0.5,
-          ease: "power2.out"
-        }, "-=0.4")
-        .to(buttonRef.current, {
-          opacity: 1,
-          y: 0,
-          duration: 0.5,
-          ease: "power2.out"
-        }, "-=0.4");
-
+      tl.to(containerRef.current, { opacity: 1, duration: 0.6, ease: 'power2.out' })
+        .to(greetingRef.current, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.4')
+        .to(nameRef.current, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.4')
+        .to(typewriterRef.current, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.4')
+        .to(profileRef.current, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.4')
+        .to(descriptionRef.current, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.4')
+        .to(searchBarRef.current, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.3')
+        .to(navCardsRef.current, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.3');
     }, containerRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <div id='home' className="min-h-screen transition-colors duration-300 text-black dark:bg-black dark:text-white overflow-hidden">
-      {/* Main Content */}
+    <div id="home" className="min-h-screen transition-colors duration-300 text-black dark:bg-black dark:text-white overflow-hidden">
       <div
         ref={containerRef}
-        className="container mx-auto px-4 py-12 min-h-screen flex flex-col items-center justify-center"
+        className="container mx-auto px-4 py-12 min-h-screen flex flex-col items-center justify-center gap-2"
         style={{ opacity: 0 }}
       >
+        {/* Greeting */}
+        <p ref={greetingRef} className="text-xl text-gray-700 dark:text-gray-300 font-light md:text-2xl text-center z-50">
+          Heyy, I&apos;m
+        </p>
+
         {/* Name */}
-        <p ref={greetingRef} className="text-xltext-gray-700  font-light md:text-2xl text-center z-50">Heyy, I&apos;mm</p>
-        <h1
-          ref={nameRef}
-          className="text-5xl md:text-6xl  font-medium mb-1 text-center z-50"
-        >
+        <h1 ref={nameRef} className="text-5xl md:text-6xl font-medium mb-1 text-center z-50">
           Adithya
         </h1>
 
-        <div ref={typewriterRef} className='text-xl md:text-xl font-extralight text-gray-700 dark:text-gray-400 z-50'>
+        {/* Typewriter */}
+        <div ref={typewriterRef} className="text-xl md:text-xl font-extralight text-gray-700 dark:text-gray-400 z-50">
           <Typewriter
             options={{
-              strings: [
-                "Aspiring AI/ML Engineer",
-                "Problem Solver",
-                "Front-end Developer",
-              ],
+              strings: ['Aspiring AI/ML Engineer', 'Problem Solver', 'Front-end Developer'],
               autoStart: true,
               loop: true,
             }}
@@ -112,127 +110,98 @@ const MainPage: React.FC = () => {
 
         {/* Profile Image */}
         <div ref={profileRef} className="relative z-50">
-          <div className="w-60 h-60 md:w-60 md:h-60 rounded-full overflow-hidden">
+          <div className="w-72 h-72 md:w-72 md:h-72 rounded-full overflow-hidden">
             <div className="w-full h-full flex items-center justify-center text-4xl md:text-5xl">
-              <Magnet padding={100} disabled={false} magnetStrength={15}>
-                <Image
-                  src="/Avatar.png"
-                  alt="Profile picture"
-                  width={300}
-                  height={400}
-                />
+              <Magnet padding={100} disabled={false} magnetStrength={25}>
+                <Image src="/Avatar.png" alt="Profile picture" width={300} height={300} />
               </Magnet>
-
             </div>
           </div>
         </div>
 
         {/* Description */}
-    
-        <div className="flex justify-center gap-3 mb-3">
+
+
+        {/* ── Glassmorphism Search Bar ── */}
+        <div ref={searchBarRef} className="w-full max-w-md mx-auto z-50">
+          <div
+            className="
+              flex items-center w-full h-14 rounded-full
+              bg-white/1 dark:bg-white/20
+              backdrop-blur-2xl
+              text-gray-800 dark:text-white/90 font-light text-sm md:text-base
+              border-1 border-zinc-200
+              px-2
+              transition-all duration-300
+              focus-within:shadow-[0_4px_40px_rgba(0,0,0,0.14)]
+            "
+          >
+            {/* Spacer / left padding */}
+            <div className="w-4" />
+
+            {/* Input */}
+            <input
+              type="text"
+              id="ask-me-anything"
+              placeholder="Ask me anything..."
+              className="
+                flex-1 bg-transparent outline-none
+                text-sm text-gray-700 dark:text-gray-200
+                placeholder-gray-400 dark:placeholder-gray-500
+              "
+            />
+
+            {/* Blue arrow button */}
+            <button
+              aria-label="Submit"
+              className="
+                flex items-center justify-center
+                w-10 h-10 rounded-full shrink-0
+                bg-blue-500/60 hover:bg-blue-600/60
+                text-white
+                active:scale-95
+                transition-all duration-200
+                shadow-md
+              "
+            >
+              <ArrowRight size={18} strokeWidth={2.5} />
+            </button>
+          </div>
+        </div>
+
+        {/* ── Navigation Cards ── */}
+        <div
+          ref={navCardsRef}
+          className="flex flex-wrap justify-center gap-3 w-full max-w-3xl mx-auto z-50 mt-2"
+        >
           {navItems.map((item) => (
             <Link
               key={item.name}
               href={item.href}
-              className="px-4 py-1.5 my-1 z-10 rounded-full text-sm
-            backdrop-blur-md bg-white/30 dark:bg-black/30
-            border border-zinc-200 dark:border-zinc-50/20
-            text-zinc-800 dark:text-zinc-200
-            hover:bg-white/50 dark:hover:bg-black/50
-            hover:scale-105 transition"
+              className="
+                group flex flex-col items-center justify-center
+                w-[5.5rem] h-[3.5rem] md:w-28 md:h-18.5
+                rounded-2xl
+                bg-white/20 dark:bg-white/10
+                backdrop-blur-2xl
+                hover:-translate-y-1
+                border-1 border-zinc-200
+                shadow-[inset_0_1px_1px_rgba(255,255,255,0.6),inset_0_-1px_1px_rgba(0,0,0,0.05)]
+                dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),inset_0_-1px_1px_rgba(0,0,0,0.2)]
+                transition-all duration-300
+                cursor-pointer
+              "
             >
-              {item.name}
+              {/* Icon bubble */}
+              <div className={`flex items-center justify-center w-4 h-4  rounded-xl mb-1`}>
+                {item.icon}
+              </div>
+              <span className="text-gray-800 dark:text-white/90 text-xs md:text-xs">
+                {item.name}
+              </span>
             </Link>
           ))}
         </div>
-        <div className="flex items-center gap-3 w-full max-w-3xl mx-auto
-  backdrop-blur-md bg-white/20 dark:bg-black/20
-  rounded-full border border-zinc-200 dark:border-zinc-50/20
-  px-3 py-3 my-1 z-10">
-
-          {/* Resume Icon with Tooltip */}
-          <div className="relative group">
-            <a
-              href="/resume.pdf"
-              download
-              className="flex items-center justify-center
-        w-10 h-10 rounded-full border border-zinc-200
-       
-        text-black dark:text-white
-        hover:scale-110 transition"
-            >
-              {/* Document SVG */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                className="w-5 h-5"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M14 2v6h6"
-                />
-              </svg>
-            </a>
-
-            {/* Tooltip */}
-            <span
-              className="absolute left-1/2 -translate-x-1/2 top-12
-        whitespace-nowrap rounded-md
-        bg-zinc-900 text-white text-xs
-        px-2 py-1
-        opacity-0 scale-95
-        group-hover:opacity-100 group-hover:scale-100
-        transition pointer-events-none"
-            >
-              Resume
-            </span>
-          </div>
-
-          {/* Input */}
-          <input
-            type="text"
-            placeholder="Ask anything about adhi"
-            className="flex-1 bg-transparent outline-none
-      text-zinc-900 dark:text-zinc-100
-      placeholder-zinc-500 dark:placeholder-zinc-400"
-          />
-
-          {/* Arrow Button */}
-          <button
-            className="flex items-center justify-center
-      w-10 h-10 rounded-full
-      bg-zinc-900 dark:bg-white
-      text-white dark:text-black
-      hover:scale-110 transition"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="w-5 h-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M5 12h14m-6-6l6 6-6 6"
-              />
-            </svg>
-          </button>
-
-        </div>
-
-
       </div>
     </div>
   );
