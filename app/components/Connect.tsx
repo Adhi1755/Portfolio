@@ -4,203 +4,74 @@ import { gsap } from 'gsap';
 import { Clock, Mail, Phone, Github, Linkedin, Instagram, CheckCircle, AlertCircle } from 'lucide-react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-// Register ScrollTrigger plugin
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
+
+type FieldName = 'name' | 'reason' | 'message';
 
 const ContactComponent = () => {
   const containerRef = useRef(null);
   const formRef = useRef(null);
   const contentRef = useRef(null);
+  const headingRef = useRef(null);
   const successRef = useRef(null);
-  
-  const [formData, setFormData] = useState<Record<FieldName, string>>({
-  name: '',
-  reason: '',
-  message: ''
-});
 
-const [focusedFields, setFocusedFields] = useState<Record<FieldName, boolean>>({
-  name: false,
-  reason: false,
-  message: false
-});
-
-  // New states for form submission
+  const [formData, setFormData] = useState<Record<FieldName, string>>({ name: '', reason: '', message: '' });
+  const [focusedFields, setFocusedFields] = useState<Record<FieldName, boolean>>({ name: false, reason: false, message: false });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(null);
+  const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | null>(null);
   const [submitMessage, setSubmitMessage] = useState('');
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     const ctx = gsap.context(() => {
-      // Set initial state immediately
-      gsap.set([formRef.current, contentRef.current], {
-        y: 30,
-        opacity: 0,
-        visibility: 'visible'
-      });
+      gsap.set([headingRef.current, formRef.current, contentRef.current], { y: 30, opacity: 0 });
 
-      // Form animation
-      gsap.to(formRef.current, {
-        y: 0,
-        opacity: 1,
-        duration: 0.6,
-        ease: "power1.out",
+      const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: formRef.current,
-          start: "top 85%",
-          end: "bottom 15%",
-          toggleActions: "play reverse play reverse",
-          onEnter: () => {
-            gsap.to(formRef.current, {
-              y: 0,
-              opacity: 1,
-              duration: 0.6,
-              ease: "power1.out"
-            });
-          },
-          onLeave: () => {
-            gsap.to(formRef.current, {
-              y: 30,
-              opacity: 0,
-              duration: 0.4,
-              ease: "power1.in"
-            });
-          },
-          onEnterBack: () => {
-            gsap.to(formRef.current, {
-              y: 0,
-              opacity: 1,
-              duration: 0.6,
-              ease: "power1.out"
-            });
-          },
-          onLeaveBack: () => {
-            gsap.to(formRef.current, {
-              y: 30,
-              opacity: 0,
-              duration: 0.4,
-              ease: "power1.in"
-            });
-          }
+          trigger: containerRef.current,
+          start: 'top 85%',
+          end: 'top 25%',
+          scrub: 0.8,
         }
       });
 
-      // Content animation with slight delay
-      gsap.to(contentRef.current, {
-        y: 0,
-        opacity: 1,
-        duration: 0.6,
-        ease: "power1.out",
-        delay: 0.2,
-        scrollTrigger: {
-          trigger: contentRef.current,
-          start: "top 85%",
-          end: "bottom 15%",
-          toggleActions: "play reverse play reverse",
-          onEnter: () => {
-            gsap.to(contentRef.current, {
-              y: 0,
-              opacity: 1,
-              duration: 0.6,
-              ease: "power1.out",
-              delay: 0.2
-            });
-          },
-          onLeave: () => {
-            gsap.to(contentRef.current, {
-              y: 30,
-              opacity: 0,
-              duration: 0.4,
-              ease: "power1.in"
-            });
-          },
-          onEnterBack: () => {
-            gsap.to(contentRef.current, {
-              y: 0,
-              opacity: 1,
-              duration: 0.6,
-              ease: "power1.out",
-              delay: 0.2
-            });
-          },
-          onLeaveBack: () => {
-            gsap.to(contentRef.current, {
-              y: 30,
-              opacity: 0,
-              duration: 0.4,
-              ease: "power1.in"
-            });
-          }
-        }
-      });
-
+      tl.to(headingRef.current, { y: 0, opacity: 1, duration: 0.8, ease: 'power2.out' })
+        .to(formRef.current, { y: 0, opacity: 1, duration: 0.7, ease: 'power2.out' }, '-=0.4')
+        .to(contentRef.current, { y: 0, opacity: 1, duration: 0.7, ease: 'power2.out' }, '-=0.5');
     }, containerRef);
 
     return () => ctx.revert();
   }, []);
 
-  // Success animation effect
   useEffect(() => {
     if (submitStatus === 'success' && successRef.current) {
-      gsap.fromTo(successRef.current, 
-        { 
-          scale: 0.8, 
-          opacity: 0, 
-          y: 20 
-        },
-        { 
-          scale: 1, 
-          opacity: 1, 
-          y: 0, 
-          duration: 0.6, 
-          ease: "back.out(1.7)" 
-        }
+      gsap.fromTo(successRef.current,
+        { scale: 0.8, opacity: 0, y: 20 },
+        { scale: 1, opacity: 1, y: 0, duration: 0.6, ease: 'back.out(1.7)' }
       );
     }
   }, [submitStatus]);
-  type FieldName = "name" | "reason" | "message";
-  const handleInputChange = (field: FieldName, value: string) => {
-  setFormData(prev => ({
-    ...prev,
-    [field]: value
-  }));
-};
 
-const handleFocus = (field: FieldName) => {
-  setFocusedFields(prev => ({
-    ...prev,
-    [field]: true
-  }));
-};
-
-const handleBlur = (field: FieldName) => {
-  if (!formData[field]) {
-    setFocusedFields(prev => ({
-      ...prev,
-      [field]: false
-    }));
-  }
-};
+  const handleInputChange = (field: FieldName, value: string) => setFormData(prev => ({ ...prev, [field]: value }));
+  const handleFocus = (field: FieldName) => setFocusedFields(prev => ({ ...prev, [field]: true }));
+  const handleBlur = (field: FieldName) => {
+    if (!formData[field]) setFocusedFields(prev => ({ ...prev, [field]: false }));
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
+    e.preventDefault();
+    setSubmitStatus(null);
+    setSubmitMessage('');
 
-  // Reset status
-  setSubmitStatus(null);
-  setSubmitMessage('');
+    if (!formData.name.trim() || !formData.reason.trim() || !formData.message.trim()) {
+      setSubmitStatus('error');
+      setSubmitMessage('Please fill in all fields');
+      return;
+    }
 
-  // Validate form data
-  if (!formData.name.trim() || !formData.reason.trim() || !formData.message.trim()) {
-    setSubmitStatus('error');
-    setSubmitMessage('Please fill in all fields');
-    return;
-  }
-
-    // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.reason)) {
       setSubmitStatus('error');
@@ -209,46 +80,23 @@ const handleBlur = (field: FieldName) => {
     }
 
     setIsSubmitting(true);
-
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name.trim(),
-          email: formData.reason.trim(),
-          message: formData.message.trim(),
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: formData.name.trim(), email: formData.reason.trim(), message: formData.message.trim() }),
       });
-
       const data = await response.json();
-
       if (response.ok) {
         setSubmitStatus('success');
-        setSubmitMessage('Your message has been sent successfully! I\'ll get back to you soon.');
-        
-        // Reset form data
-        setFormData({
-          name: '',
-          reason: '',
-          message: ''
-        });
-        
-        // Reset focused fields
-        setFocusedFields({
-          name: false,
-          reason: false,
-          message: false
-        });
+        setSubmitMessage("Your message has been sent! I'll get back to you soon.");
+        setFormData({ name: '', reason: '', message: '' });
+        setFocusedFields({ name: false, reason: false, message: false });
       } else {
         setSubmitStatus('error');
         setSubmitMessage(data.message || 'Something went wrong. Please try again.');
-        console.error('Server error:', data);
       }
-    } catch (error) {
-      console.error('Error sending message:', error);
+    } catch {
       setSubmitStatus('error');
       setSubmitMessage('Network error. Please check your connection and try again.');
     } finally {
@@ -256,83 +104,81 @@ const handleBlur = (field: FieldName) => {
     }
   };
 
-  const resetForm = () => {
-    setSubmitStatus(null);
-    setSubmitMessage('');
-  };
+  const resetForm = () => { setSubmitStatus(null); setSubmitMessage(''); };
 
   return (
-    <div  id='contact' className="min-h-screen bg-white dark:bg-black transition-colors duration-300 flex justify-center items-center px-4 sm:px-6">
-      <div className="container mx-auto py-8 sm:py-12 md:py-16 max-w-7xl">
-        <div 
-          ref={containerRef}
-          className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 md:gap-10"
-        >
-          {/* Left Side - Form */}
-          <div ref={formRef} className="space-y-6 sm:space-y-8 opacity-0">
-            <div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-black dark:text-white mb-3 sm:mb-4 z-50">
-                Drop Me a Message
-              </h2>
-              <p className="text-lg sm:text-xl font-light text-gray-600 dark:text-gray-400">
-                Feel free to reach out for collaborations, questions, or just a friendly chat!
-              </p>
-            </div>
-
-            {/* Success Message */}
-{submitStatus === 'success' && (
-  <div 
-    ref={successRef}
-    className="bg-transparent dark:bg-gray-900/20 border border-gray-300 dark:border-gray-700 rounded-lg p-6 mb-6"
-  >
-    <div className="flex items-center mb-3">
-      <CheckCircle className="w-6 h-6 text-gray-700 dark:text-gray-300 mr-3" />
-      <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-        Message Sent Successfully!
-      </h3>
-    </div>
-    <p className="text-gray-700 dark:text-gray-300 mb-4">
-      {submitMessage}
-    </p>
-    <button
-      onClick={resetForm}
-      className="text-sm text-gray-800 dark:text-gray-200 hover:text-black dark:hover:text-white font-medium underline"
+    <div
+      id="contact"
+      ref={containerRef}
+      className="relative bg-white dark:bg-black transition-colors duration-300 overflow-hidden"
     >
-      Send another message
-    </button>
-  </div>
-)}
+      {/* Background orbs */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute top-0 -right-24 w-[400px] h-[400px] rounded-full bg-rose-50 dark:bg-rose-950/15 blur-[100px] opacity-50" />
+        <div className="absolute bottom-0 -left-20 w-[350px] h-[350px] rounded-full bg-amber-50 dark:bg-amber-950/15 blur-[90px] opacity-40" />
+      </div>
 
-{/* Error Message */}
-{submitStatus === 'error' && (
-  <div className="bg-transparent dark:bg-gray-800/30 border border-gray-400 dark:border-gray-600 rounded-lg p-4 mb-6">
-    <div className="flex items-center">
-      <AlertCircle className="w-5 h-5 text-gray-800 dark:text-gray-200 mr-3" />
-      <p className="text-gray-900 dark:text-gray-100">
-        {submitMessage}
-      </p>
-    </div>
-  </div>
-)}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 py-24 lg:py-32">
 
-            {/* Form - Hide when success */}
+        {/* Section heading */}
+        <div ref={headingRef} className="mb-16 flex flex-col gap-4">
+          <div className="inline-flex items-center gap-2 w-fit px-4 py-1.5 rounded-full border border-gray-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/60 backdrop-blur text-sm font-light text-gray-500 dark:text-gray-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+            Get In Touch
+          </div>
+          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-semibold tracking-tight text-black dark:text-white leading-[1.05]">
+            Let&apos;s Connect
+          </h2>
+          <p className="text-base sm:text-lg font-light text-gray-600 dark:text-gray-400 max-w-xl leading-relaxed">
+            Feel free to reach out for collaborations, questions, or just a friendly chat!
+          </p>
+        </div>
+
+        {/* Two-column grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+
+          {/* Left — contact form */}
+          <div ref={formRef}>
+            {/* Success state */}
+            {submitStatus === 'success' && (
+              <div
+                ref={successRef}
+                className="p-6 rounded-3xl border border-gray-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/40 backdrop-blur mb-8"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <CheckCircle className="w-5 h-5 text-emerald-500" />
+                  <h3 className="text-base font-medium text-black dark:text-white">Message Sent!</h3>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{submitMessage}</p>
+                <button onClick={resetForm} className="text-sm font-light text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors underline underline-offset-2">
+                  Send another message
+                </button>
+              </div>
+            )}
+
+            {/* Error state */}
+            {submitStatus === 'error' && (
+              <div className="flex items-center gap-3 p-4 rounded-2xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/20 mb-6">
+                <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+                <p className="text-sm text-red-700 dark:text-red-400">{submitMessage}</p>
+              </div>
+            )}
+
             {submitStatus !== 'success' && (
-              <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
-                {/* Name Field */}
-                <div className="relative pb-2">
+              <form onSubmit={handleSubmit} className="space-y-8">
+                {/* Name */}
+                <div className="relative pb-1">
                   <label
                     htmlFor="name"
-                    className={`absolute left-0 transition-all duration-300 pointer-events-none ${
-                      focusedFields.name || formData.name
-                        ? 'text-sm text-black dark:text-white -top-6'
-                        : 'text-base sm:text-lg text-gray-500 dark:text-gray-400 top-3 sm:top-4'
-                    }`}
+                    className={`absolute left-0 transition-all duration-300 pointer-events-none ${focusedFields.name || formData.name
+                        ? 'text-xs font-medium text-black dark:text-white -top-5'
+                        : 'text-base text-gray-400 dark:text-gray-500 top-3'
+                      }`}
                   >
                     Name
                   </label>
                   <input
                     id="name"
-                    name="name"
                     type="text"
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
@@ -340,25 +186,23 @@ const handleBlur = (field: FieldName) => {
                     onBlur={() => handleBlur('name')}
                     disabled={isSubmitting}
                     required
-                    className="w-full bg-transparent border-b-2 border-gray-300 dark:border-gray-600 focus:border-black dark:focus:border-white outline-none py-3 sm:py-4 text-base sm:text-lg text-black dark:text-white transition-colors duration-300 disabled:opacity-50"
+                    className="w-full bg-transparent border-b border-gray-200 dark:border-zinc-800 focus:border-black dark:focus:border-white outline-none py-3 text-base text-black dark:text-white transition-colors duration-300 disabled:opacity-50"
                   />
                 </div>
 
-                {/* Email Field */}
-                <div className="relative pb-2">
+                {/* Email */}
+                <div className="relative pb-1">
                   <label
                     htmlFor="email"
-                    className={`absolute left-0 transition-all duration-300 pointer-events-none ${
-                      focusedFields.reason || formData.reason
-                        ? 'text-sm text-black dark:text-white -top-6'
-                        : 'text-base sm:text-lg text-gray-500 dark:text-gray-400 top-3 sm:top-4'
-                    }`}
+                    className={`absolute left-0 transition-all duration-300 pointer-events-none ${focusedFields.reason || formData.reason
+                        ? 'text-xs font-medium text-black dark:text-white -top-5'
+                        : 'text-base text-gray-400 dark:text-gray-500 top-3'
+                      }`}
                   >
-                    E-mail
+                    Email
                   </label>
                   <input
                     id="email"
-                    name="email"
                     type="email"
                     value={formData.reason}
                     onChange={(e) => handleInputChange('reason', e.target.value)}
@@ -366,25 +210,23 @@ const handleBlur = (field: FieldName) => {
                     onBlur={() => handleBlur('reason')}
                     disabled={isSubmitting}
                     required
-                    className="w-full bg-transparent border-b-2 border-gray-300 dark:border-gray-600 focus:border-black dark:focus:border-white outline-none py-3 sm:py-4 text-base sm:text-lg text-black dark:text-white transition-colors duration-300 disabled:opacity-50"
+                    className="w-full bg-transparent border-b border-gray-200 dark:border-zinc-800 focus:border-black dark:focus:border-white outline-none py-3 text-base text-black dark:text-white transition-colors duration-300 disabled:opacity-50"
                   />
                 </div>
 
-                {/* Message Field */}
-                <div className="relative pb-2">
+                {/* Message */}
+                <div className="relative pb-1">
                   <label
                     htmlFor="message"
-                    className={`absolute left-0 transition-all duration-300 pointer-events-none ${
-                      focusedFields.message || formData.message
-                        ? 'text-sm text-black dark:text-white -top-6'
-                        : 'text-base sm:text-lg text-gray-500 dark:text-gray-400 top-3 sm:top-4'
-                    }`}
+                    className={`absolute left-0 transition-all duration-300 pointer-events-none ${focusedFields.message || formData.message
+                        ? 'text-xs font-medium text-black dark:text-white -top-5'
+                        : 'text-base text-gray-400 dark:text-gray-500 top-3'
+                      }`}
                   >
                     Message
                   </label>
                   <textarea
                     id="message"
-                    name="message"
                     value={formData.message}
                     onChange={(e) => handleInputChange('message', e.target.value)}
                     onFocus={() => handleFocus('message')}
@@ -392,29 +234,29 @@ const handleBlur = (field: FieldName) => {
                     disabled={isSubmitting}
                     required
                     rows={5}
-                    className="w-full bg-transparent border-b-2 border-gray-300 dark:border-gray-600 focus:border-black dark:focus:border-white outline-none py-3 sm:py-4 text-base sm:text-lg text-black dark:text-white transition-colors duration-300 resize-none disabled:opacity-50"
+                    className="w-full bg-transparent border-b border-gray-200 dark:border-zinc-800 focus:border-black dark:focus:border-white outline-none py-3 text-base text-black dark:text-white transition-colors duration-300 resize-none disabled:opacity-50"
                   />
                 </div>
 
-                {/* Submit Button */}
-                <div className="pt-1">
+                {/* Submit */}
+                <div className="pt-2">
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-5 sm:px-6 py-2.5 sm:py-3 border border-black dark:border-white text-black dark:text-white bg-transparent hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black hover:shadow-[0_0_20px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300 rounded-full font-light tracking-wide text-sm sm:text-base flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-black dark:disabled:hover:text-white disabled:hover:shadow-none"
+                    className="flex items-center gap-2 px-6 py-3 rounded-full bg-black dark:bg-white text-white dark:text-black font-normal text-sm tracking-wide hover:opacity-85 transition-all duration-200 shadow-lg shadow-black/10 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? (
                       <>
                         <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                         </svg>
-                        Sending...
+                        Sending…
                       </>
                     ) : (
                       <>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
                         </svg>
                         Send Message
                       </>
@@ -425,96 +267,74 @@ const handleBlur = (field: FieldName) => {
             )}
           </div>
 
-          {/* Right Side - Content */}
-          <div 
-            ref={contentRef}
-            className="md:border-l border-gray-300 dark:border-gray-600 md:pl-12 lg:pl-16 flex flex-col justify-start space-y-6 sm:space-y-8 mt-8 md:mt-0 opacity-0"
-          >
-            <div className="mb-8 sm:mb-12">
-              <h3 className="text-3xl sm:text-4xl md:text-5xl font-light text-black dark:text-white mb-3 sm:mb-4">
-               Reach out anytime
-              </h3>
-              <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 font-light">
-                -my contact info and social profiles are just below.
-              </p>
-            </div>
+          {/* Right — info panel */}
+          <div ref={contentRef} className="flex flex-col gap-8">
+            {/* Info card */}
+            <div className="p-7 rounded-3xl border border-gray-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/40 backdrop-blur space-y-6">
+              <h3 className="text-lg font-medium text-black dark:text-white">Contact Details</h3>
 
-            <div className="space-y-6 sm:space-y-8">
-              <div className="space-y-4 sm:space-y-6">
-                <div className="flex items-center space-x-3 sm:space-x-4">
-                  <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full">
-                    <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-black dark:text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg sm:text-xl font-normal text-black dark:text-white mb-1">
-                      Response Time
-                    </h4>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
-                      I typically respond within 24 hours.
-                    </p>
-                  </div>
+              <div className="flex items-start gap-4">
+                <div className="p-2.5 rounded-2xl bg-gray-100 dark:bg-zinc-800 flex-shrink-0">
+                  <Clock className="w-4 h-4 text-black dark:text-white" />
                 </div>
-
-                <div className="flex items-center space-x-3 sm:space-x-4">
-                  <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full">
-                    <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-black dark:text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg sm:text-xl font-normal text-black dark:text-white mb-1">
-                      Email
-                    </h4>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base break-all">
-                      adithya1755@gmail.com
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-3 sm:space-x-4">
-                  <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full">
-                    <Phone className="w-5 h-5 sm:w-6 sm:h-6 text-black dark:text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg sm:text-xl font-normal text-black dark:text-white mb-1">
-                      Phone
-                    </h4>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
-                      +91 63741-39422
-                    </p>
-                  </div>
+                <div>
+                  <p className="text-sm font-medium text-black dark:text-white mb-0.5">Response Time</p>
+                  <p className="text-sm font-light text-gray-500 dark:text-gray-400">Typically within 24 hours</p>
                 </div>
               </div>
 
-              {/* Social Media Buttons */}
-              <div className="pt-4 sm:pt-6 pb-2 sm:pb-4">
-                <h4 className="text-lg sm:text-xl font-normal text-black dark:text-white mb-4">
-                  Social profiles link:
-                </h4>
-                <div className="flex flex-wrap gap-3 sm:gap-4">
-                  <a
-                    href="https://www.linkedin.com/in/adithyanagamuneendran/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-gray-300 dark:border-gray-600 hover:border-black dark:hover:border-white hover:bg-black dark:hover:bg-white hover:scale-105 transition-all duration-300 group"
-                  >
-                    <Linkedin className="w-5 h-5 sm:w-6 sm:h-6 text-black dark:text-white group-hover:text-white dark:group-hover:text-black" />
-                  </a>
-                  <a
-                    href="https://github.com/Adhi1755"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-gray-300 dark:border-gray-600 hover:border-black dark:hover:border-white hover:bg-black dark:hover:bg-white hover:scale-105 transition-all duration-300 group"
-                  >
-                    <Github className="w-5 h-5 sm:w-6 sm:h-6 text-black dark:text-white group-hover:text-white dark:group-hover:text-black" />
-                  </a>
-                  <a
-                    href="https://instagram.com/adithya._.77"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-gray-300 dark:border-gray-600 hover:border-black dark:hover:border-white hover:bg-black dark:hover:bg-white hover:scale-105 transition-all duration-300 group"
-                  >
-                    <Instagram className="w-5 h-5 sm:w-6 sm:h-6 text-black dark:text-white group-hover:text-white dark:group-hover:text-black" />
-                  </a>
+              <div className="flex items-start gap-4">
+                <div className="p-2.5 rounded-2xl bg-gray-100 dark:bg-zinc-800 flex-shrink-0">
+                  <Mail className="w-4 h-4 text-black dark:text-white" />
                 </div>
+                <div>
+                  <p className="text-sm font-medium text-black dark:text-white mb-0.5">Email</p>
+                  <p className="text-sm font-light text-gray-500 dark:text-gray-400 break-all">adithya1755@gmail.com</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <div className="p-2.5 rounded-2xl bg-gray-100 dark:bg-zinc-800 flex-shrink-0">
+                  <Phone className="w-4 h-4 text-black dark:text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-black dark:text-white mb-0.5">Phone</p>
+                  <p className="text-sm font-light text-gray-500 dark:text-gray-400">+91 63741-39422</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Social card */}
+            <div className="p-7 rounded-3xl border border-gray-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/40 backdrop-blur">
+              <h3 className="text-sm font-medium text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-5">Find me on</h3>
+              <div className="flex items-center gap-3">
+                <a
+                  href="https://www.linkedin.com/in/adithyanagamuneendran/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-3 flex-1 p-3 rounded-2xl border border-gray-200 dark:border-zinc-800 hover:border-black dark:hover:border-white hover:bg-black dark:hover:bg-white transition-all duration-200"
+                >
+                  <Linkedin className="w-5 h-5 text-black dark:text-white group-hover:text-white dark:group-hover:text-black transition-colors" />
+                  <span className="text-sm font-light text-gray-600 dark:text-gray-400 group-hover:text-white dark:group-hover:text-black transition-colors">LinkedIn</span>
+                </a>
+                <a
+                  href="https://github.com/Adhi1755"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-3 flex-1 p-3 rounded-2xl border border-gray-200 dark:border-zinc-800 hover:border-black dark:hover:border-white hover:bg-black dark:hover:bg-white transition-all duration-200"
+                >
+                  <Github className="w-5 h-5 text-black dark:text-white group-hover:text-white dark:group-hover:text-black transition-colors" />
+                  <span className="text-sm font-light text-gray-600 dark:text-gray-400 group-hover:text-white dark:group-hover:text-black transition-colors">GitHub</span>
+                </a>
+                <a
+                  href="https://instagram.com/adithya._.77"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-3 flex-1 p-3 rounded-2xl border border-gray-200 dark:border-zinc-800 hover:border-black dark:hover:border-white hover:bg-black dark:hover:bg-white transition-all duration-200"
+                >
+                  <Instagram className="w-5 h-5 text-black dark:text-white group-hover:text-white dark:group-hover:text-black transition-colors" />
+                  <span className="text-sm font-light text-gray-600 dark:text-gray-400 group-hover:text-white dark:group-hover:text-black transition-colors">Instagram</span>
+                </a>
               </div>
             </div>
           </div>

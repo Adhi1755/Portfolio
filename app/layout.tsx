@@ -21,7 +21,7 @@ const outfit = localFont({
 
 
 export const metadata: Metadata = {
-  title: "Adithya's Protfolio",
+  title: "Adithya's Portfolio",
   description: "Adithya's Portfolio using Next.js",
 };
 
