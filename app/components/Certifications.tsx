@@ -92,7 +92,7 @@ export default function Certifications() {
   const [mousePos, setMousePos] = useState<{ [key: number]: { x: number; y: number } }>({});
 
   /* ─ Handle card mouse-move for spotlight effect ─ */
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>, id: number) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>, id: number) => {
     const rect = e.currentTarget.getBoundingClientRect();
     setMousePos(prev => ({
       ...prev,
