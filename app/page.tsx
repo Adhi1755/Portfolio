@@ -15,6 +15,7 @@ export default function Home() {
     <MainPage/>
     <AboutMeContainer/>
     <Projects/>
+    <Certifications/>
     <ContactComponent/>
     <Footerbar/>
   
