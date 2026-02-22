@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -119,64 +119,83 @@ const images: ImageData[] = [
   },
 ];
 
-export default function Projects() {
-  const isDesktop = useMediaQuery('(min-width: 768px)');
-  const [activeImage, setActiveImage] = useState<ImageData | null>(null);
+function FloatingPreview({ image, isDesktop }: { image: ImageData | null; isDesktop: boolean }) {
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-  const [opacity, setOpacity] = useState(0);
-  const [scale, setScale] = useState(0.5);
-  const [showAll, setShowAll] = useState(false);
-  const INITIAL_COUNT = 4;
-  const visibleProjects = showAll ? images : images.slice(0, INITIAL_COUNT);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const requestRef = useRef<number | null>(null);
   const prevCursorPosition = useRef({ x: 0, y: 0 });
-  const containerRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
-  const projectItemsRef = useRef<Array<HTMLDivElement | null>>([]);
-
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    const { clientX, clientY } = e;
-    const dx = clientX - prevCursorPosition.current.x;
-    const dy = clientY - prevCursorPosition.current.y;
-    const easeAmount = 0.2;
-    const newX = prevCursorPosition.current.x + dx * easeAmount;
-    const newY = prevCursorPosition.current.y + dy * easeAmount;
-    setCursorPosition({ x: newX, y: newY });
-    prevCursorPosition.current = { x: newX, y: newY };
-  }, []);
+  const hasPositionRef = useRef(false);
 
   useEffect(() => {
+    if (!isDesktop || !image) return;
+
     const updateCursorPosition = (e: MouseEvent) => {
       if (requestRef.current) return;
       requestRef.current = requestAnimationFrame(() => {
-        handleMouseMove(e);
+        const { clientX, clientY } = e;
+        if (!hasPositionRef.current) {
+          prevCursorPosition.current = { x: clientX, y: clientY };
+          hasPositionRef.current = true;
+          setCursorPosition({ x: clientX, y: clientY });
+          requestRef.current = null;
+          return;
+        }
+
+        const dx = clientX - prevCursorPosition.current.x;
+        const dy = clientY - prevCursorPosition.current.y;
+        const easeAmount = 0.2;
+        const newX = prevCursorPosition.current.x + dx * easeAmount;
+        const newY = prevCursorPosition.current.y + dy * easeAmount;
+
+        setCursorPosition({ x: newX, y: newY });
+        prevCursorPosition.current = { x: newX, y: newY };
         requestRef.current = null;
       });
     };
+
     window.addEventListener('mousemove', updateCursorPosition);
     return () => {
       window.removeEventListener('mousemove', updateCursorPosition);
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
+      requestRef.current = null;
+      hasPositionRef.current = false;
     };
-  }, [handleMouseMove]);
+  }, [isDesktop, image]);
 
-  const handleImageHover = useCallback((image: ImageData) => {
-    if (activeImage !== image) {
-      setActiveImage(image);
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      timeoutRef.current = setTimeout(() => { setOpacity(1); setScale(1); }, 50);
-    } else {
-      setOpacity(1); setScale(1);
-    }
-  }, [activeImage]);
+  if (!isDesktop || !image) return null;
 
-  const handleMouseLeave = useCallback(() => {
-    setOpacity(0); setScale(0.5);
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => setActiveImage(null), 300);
-  }, []);
+  return (
+    <Image
+      src={image.src}
+      alt={image.alt}
+      width={420}
+      height={240}
+      className="fixed pointer-events-none z-50 w-[420px] h-[240px] rounded-2xl object-cover shadow-2xl shadow-black/20"
+      style={{
+        left: `${cursorPosition.x}px`,
+        top: `${cursorPosition.y}px`,
+        transform: 'translate(-50%, -50%)',
+      }}
+    />
+  );
+}
+
+export default function Projects() {
+  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const [activeImage, setActiveImage] = useState<ImageData | null>(null);
+  const [showAll, setShowAll] = useState(false);
+  const INITIAL_COUNT = 4;
+  const visibleProjects = showAll ? images : images.slice(0, INITIAL_COUNT);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const projectItemsRef = useRef<Array<HTMLDivElement | null>>([]);
+
+  const handleImageHover = (image: ImageData) => {
+    setActiveImage(image);
+  };
+
+  const handleMouseLeave = () => {
+    setActiveImage(null);
+  };
 
   const handleProjectClick = (image: ImageData) => {
     if (image.link) window.open(image.link, '_blank', 'noopener,noreferrer');
@@ -277,7 +296,6 @@ export default function Projects() {
 
         {/* Projects list */}
         <div
-          ref={listRef}
           className="relative"
           onMouseLeave={handleMouseLeave}
         >
@@ -357,22 +375,7 @@ export default function Projects() {
           )}
 
           {/* Floating image on hover (desktop) */}
-          {isDesktop && activeImage && (
-            <Image
-              src={activeImage.src}
-              alt={activeImage.alt}
-              width={420}
-              height={240}
-              className="fixed pointer-events-none z-50 w-[420px] h-[240px] rounded-2xl object-cover shadow-2xl shadow-black/20"
-              style={{
-                left: `${cursorPosition.x}px`,
-                top: `${cursorPosition.y}px`,
-                transform: `translate(-50%, -50%) scale(${scale})`,
-                opacity: opacity,
-                transition: 'opacity 0.2s ease, transform 0.2s ease',
-              }}
-            />
-          )}
+          <FloatingPreview image={activeImage} isDesktop={isDesktop} />
         </div>
       </div>
     </div>
