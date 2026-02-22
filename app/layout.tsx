@@ -13,6 +13,12 @@ const outfit = localFont({
   display: 'swap',
 });
 
+const moralana = localFont({
+  src: './fonts/moralana/Moralana DEMO.otf',
+  variable: '--font-moralana',
+  display: 'swap',
+});
+
 
 
 export const metadata: Metadata = {
@@ -31,7 +37,7 @@ export default function RootLayout({
     <html lang="en">
 
       <body
-        className={`${outfit.variable} antialiased`}
+        className={`${outfit.variable} ${moralana.variable} antialiased`}
       >
         <SmoothScroll />
         <Header />

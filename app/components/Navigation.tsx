@@ -254,8 +254,8 @@ export default function Header() {
               onClick={() => scrollTo('home')}
               className="relative group flex items-center gap-1.5 select-none"
             >
-              <span className="text-base font-bold tracking-tight text-black dark:text-white transition-colors">
-                A
+              <span className="text-xl font-medium tracking-tight text-black dark:text-white transition-colors" style={{ fontFamily: 'var(--font-moralana)' }}>
+                Adhi
               </span>
               <span className="text-base font-bold tracking-tight bg-gradient-to-r from-violet-500 to-indigo-500 bg-clip-text text-transparent">
                 .
