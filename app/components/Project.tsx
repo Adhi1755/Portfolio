@@ -20,31 +20,102 @@ interface ImageData {
 const images: ImageData[] = [
   {
     id: 1,
-    src: '/images/InventoryManagementSystem.png',
-    alt: 'Inventory Management System',
-    description: "Built using Flask — showcases full-stack development, user authentication, Chart.js data visualization, responsive UI, SQL database management, and real-time inventory tracking.",
-    link: 'https://github.com/Adhi1755/InventoryHub',
+    src: '/images/EmbedMindAI.png',
+    alt: 'EmbedMindAI',
+    description: "EmbedMindAI — AI-powered PDF embedding and semantic question-answering system.",
+    link: 'https://github.com/Adhi1755/EmbedMindAI',
   },
   {
     id: 2,
-    src: '/images/HeartPredict.png',
-    alt: 'Heart Disease Prediction',
-    description: "ML models that identify at-risk patients based on health indicators using Python, Pandas, Scikit-learn, Logistic Regression, and Random Forest with full EDA pipeline.",
-    link: 'https://github.com/Adhi1755/Heat_Diseases_Prediction',
+    src: '/images/SkillSpark.png',
+    alt: 'SkillSpark',
+    description: "SkillSpark — AI-powered adaptive learning and interview preparation platform.",
+    link: 'https://github.com/Adhi1755/SkillSpark',
   },
   {
     id: 3,
-    src: '/images/Orrery-web-app.png',
-    alt: 'Orrery Web App',
-    description: "Built for NASA Space Apps Challenge 2024 — visually simulates the solar system with animated planetary orbits, interactive planet details, crafted with HTML, CSS, and JavaScript.",
-    link: 'https://github.com/Adhi1755/Orrery-web-app',
+    src: '/images/GalaxyGeeks.png',
+    alt: 'GalaxyGeeks',
+    description: "GalaxyGeeks — Collaborative team-based project repository.",
+    link: 'https://github.com/Adhi1755/GalaxyGeeks',
   },
   {
     id: 4,
-    src: '/images/Portfolio.png',
-    alt: 'Portfolio',
-    description: "This portfolio — built with Next.js, Tailwind CSS, and GSAP animations to showcase my work and skills, practicing modern web development, UI design, and interactive animations.",
-    link: '#home',
+    src: '/images/InventoryManagementSystem.png',
+    alt: 'InventoryHub',
+    description: "InventoryHub — Full-stack inventory management system with authentication and real-time stock tracking.",
+    link: 'https://github.com/Adhi1755/InventoryHub',
+  },
+  {
+    id: 5,
+    src: '/images/AgriNova.png',
+    alt: 'AgriNova',
+    description: "AgriNova — AI-based agriculture project focused on improving farming analytics and insights.",
+    link: 'https://github.com/Adhi1755/AgriNova',
+  },
+  {
+    id: 6,
+    src: '/images/GigEconomy.png',
+    alt: 'Gig Economy',
+    description: "Gig Economy — Data analysis project exploring gig workforce trends and economic insights.",
+    link: 'https://github.com/Adhi1755/Gig-Economy',
+  },
+  {
+    id: 7,
+    src: '/images/PageWhisper.png',
+    alt: 'PageWhisper',
+    description: "PageWhisper — RAG-based intelligent document assistant for querying PDF content.",
+    link: 'https://github.com/Adhi1755/PageWhisper',
+  },
+  
+  {
+    id: 8,
+    src: '/images/FocusSense.png',
+    alt: 'FocusSense',
+    description: "FocusSense — Productivity tracking web application (forked project) for monitoring focus sessions.",
+    link: 'https://github.com/Adhi1755/FocusSense',
+  },
+  {
+    id: 9,
+    src: '/images/Orrery-web-app.png',
+    alt: 'Orrery Web App',
+    description: "Orrery Web App — NASA Space Apps Challenge 2024 project simulating the solar system with interactive planetary orbits.",
+    link: 'https://github.com/Adhi1755/Orrery-web-app',
+  },  
+  {
+    id: 10,
+    src: '/images/Power-Consumption-Demand-Forecasting.png',
+    alt: 'Power Consumption Demand Forecasting',
+    description: "Electricity Demand Forecasting — A data-driven ML project predicting future power usage using time series data and weather patterns.",
+    link: 'https://github.com/Adhi1755/Power-Consumption-Demand-Forecasting',
+  },
+  {
+    id: 11,
+    src: '/images/SanctionImpact.png',
+    alt: 'SanctionImpact',
+    description: "SanctionImpact — AI/NLP deep learning project for analyzing and classifying economic sanction policies.",
+    link: 'https://github.com/Adhi1755/SanctionImpact',
+  },
+  {
+    id: 12,
+    src: '/images/Pharma-Sales-Analysis.png',
+    alt: 'Pharma Sales Analysis',
+    description: "Pharma Sales Analysis — Data-science project forecasting pharmaceutical sales trends using historical data.",
+    link: 'https://github.com/Adhi1755/Pharma-Sales-Analysis',
+  },
+  {
+    id: 13,
+    src: '/images/Crop-Price-Prediction.png',
+    alt: 'Crop Price Prediction',
+    description: "Crop Price Prediction — Machine learning regression model predicting agricultural crop prices.",
+    link: 'https://github.com/Adhi1755/Crop-Price-Prediction-',
+  },
+  {
+    id: 14,
+    src: '/images/Heart_Diseases_Prediction.png',
+    alt: 'Heart Diseases Prediction',
+    description: "Heart Disease Prediction — ML classification pipeline identifying at-risk patients using medical indicators.",
+    link: 'https://github.com/Adhi1755/Heart_Diseases_Prediction',
   },
 ];
 
@@ -54,13 +125,16 @@ export default function Projects() {
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
   const [opacity, setOpacity] = useState(0);
   const [scale, setScale] = useState(0.5);
+  const [showAll, setShowAll] = useState(false);
+  const INITIAL_COUNT = 4;
+  const visibleProjects = showAll ? images : images.slice(0, INITIAL_COUNT);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const requestRef = useRef<number | null>(null);
   const prevCursorPosition = useRef({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
-  const projectItemsRef = useRef<HTMLDivElement[]>([]);
+  const projectItemsRef = useRef<Array<HTMLDivElement | null>>([]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     const { clientX, clientY } = e;
@@ -113,43 +187,52 @@ export default function Projects() {
 
   useGSAP(() => {
     if (!isClient || !containerRef.current) return;
-    const timer = setTimeout(() => {
-      const ctx = gsap.context(() => {
-        const headerEl = headerRef.current;
-        const projectItems = projectItemsRef.current.filter(Boolean);
-        if (!headerEl || projectItems.length === 0) return;
 
-        gsap.set(headerEl, { opacity: 0, y: 40 });
-        gsap.set(projectItems, { opacity: 0, y: 30, scale: 0.98 });
+    const ctx = gsap.context(() => {
+      const headerEl = headerRef.current;
+      const projectItems = projectItemsRef.current.filter((item): item is HTMLDivElement => Boolean(item));
+      if (!headerEl || projectItems.length === 0) return;
 
-        gsap.timeline({
+      gsap.fromTo(
+        headerEl,
+        { opacity: 0, y: 24 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.45,
+          ease: 'power2.out',
           scrollTrigger: {
             trigger: containerRef.current,
-            start: 'top 88%',
-            end: 'top 30%',
-            scrub: 1,
-          }
-        }).to(headerEl, { opacity: 1, y: 0, duration: 1, ease: 'power2.out' });
+            start: 'top 92%',
+            toggleActions: 'play none none none',
+            once: true,
+          },
+        }
+      );
 
-        gsap.timeline({
-          scrollTrigger: {
-            trigger: listRef.current,
-            start: 'top 85%',
-            end: 'bottom 75%',
-            scrub: 1.2,
-          }
-        }).to(projectItems, {
-          opacity: 1, y: 0, scale: 1, duration: 2,
-          stagger: { amount: 1.2, from: 'start', ease: 'power2.out' },
-          ease: 'power2.out',
-        });
+      gsap.set(projectItems, { opacity: 0, y: 20, scale: 0.99 });
 
-        ScrollTrigger.refresh();
-      }, containerRef);
-      return () => { ctx.revert(); clearTimeout(timer); };
-    }, 100);
-    return () => clearTimeout(timer);
-  }, [isClient]);
+      ScrollTrigger.batch(projectItems, {
+        start: 'top 95%',
+        once: true,
+        onEnter: (batch) => {
+          gsap.to(batch, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.35,
+            stagger: 0.06,
+            ease: 'power2.out',
+            overwrite: 'auto',
+          });
+        },
+      });
+
+      ScrollTrigger.refresh();
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, [isClient, showAll]);
 
   if (!isClient) return null;
 
@@ -198,10 +281,10 @@ export default function Projects() {
           className="relative"
           onMouseLeave={handleMouseLeave}
         >
-          {images.map((image, index) => (
+          {visibleProjects.map((image, index) => (
             <div
               key={image.id}
-              ref={(el) => { if (el) projectItemsRef.current[index] = el; }}
+              ref={(el) => { projectItemsRef.current[index] = el; }}
               className={`group relative flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6 py-6 border-b border-gray-200 dark:border-zinc-800 cursor-pointer transition-all duration-300 md:hover:px-2 ${activeImage?.id === image.id ? 'bg-black/[0.02] dark:bg-white/[0.02] rounded-xl' : ''
                 }`}
               onMouseEnter={() => handleImageHover(image)}
@@ -248,6 +331,30 @@ export default function Projects() {
               />
             </div>
           ))}
+
+          {/* Show More / Show Less button */}
+          {images.length > INITIAL_COUNT && (
+            <div className="flex justify-center mt-10">
+              <button
+                onClick={() => {
+                  setShowAll((prev) => !prev);
+                  setTimeout(() => ScrollTrigger.refresh(), 100);
+                }}
+                className="flex items-center gap-2 px-7 py-3 rounded-full border border-gray-300 dark:border-zinc-600 text-gray-700 dark:text-gray-300 font-light text-sm tracking-wide hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-all duration-200"
+              >
+                {showAll ? 'Show Less' : 'Show More'}
+                <svg
+                  className={`w-4 h-4 transition-transform duration-300 ${showAll ? 'rotate-180' : ''}`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+          )}
 
           {/* Floating image on hover (desktop) */}
           {isDesktop && activeImage && (
