@@ -164,18 +164,26 @@ function FloatingPreview({ image, isDesktop }: { image: ImageData | null; isDesk
   if (!isDesktop || !image) return null;
 
   return (
-    <Image
-      src={image.src}
-      alt={image.alt}
-      width={420}
-      height={240}
-      className="fixed pointer-events-none z-50 w-[420px] h-[240px] rounded-2xl object-cover shadow-2xl shadow-black/20"
+    <div
+      className="fixed pointer-events-none z-50 w-105 h-60"
       style={{
         left: `${cursorPosition.x}px`,
         top: `${cursorPosition.y}px`,
         transform: 'translate(-50%, -50%)',
       }}
-    />
+    >
+      <Image
+        src={image.src}
+        alt={image.alt}
+        width={420}
+        height={240}
+        className="w-full h-full rounded-3xl object-cover"
+      />
+      <div className="absolute inset-x-0 bottom-0 h-20 bg-linear-to-t from-black/65 via-black/30 to-transparent rounded-b-3xl" />
+      <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-sm font-medium text-white tracking-wide text-center px-4">
+        {image.alt}
+      </p>
+    </div>
   );
 }
 

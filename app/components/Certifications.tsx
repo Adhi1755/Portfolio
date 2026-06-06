@@ -1,21 +1,18 @@
-'use client'
-import { useEffect, useRef, useState, useCallback } from 'react';
+'use client';
+
+import { useRef, useState, useCallback } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { MoveUpRight } from 'lucide-react';
 import Image from 'next/image';
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
-
-/* ─── Certification Data ─────────────────────────────────────────────────── */
 
 interface CertData {
   id: number;
   title: string;
   issuer: string;
   date: string;
-  link?: string;
   description: string;
   imageSrc: string;
   imageAlt: string;
@@ -27,7 +24,6 @@ const certifications: CertData[] = [
     title: 'Microsoft Certified: Azure Data Fundamentals',
     issuer: 'Microsoft',
     date: '2024',
-    link: '#',
     description:
       'Earned Microsoft Azure Data Fundamentals certification demonstrating foundational knowledge of Azure data services including Azure Data Factory, Azure Cosmos DB, Azure SQL, Azure Databricks, and Azure Data Lake.',
     imageSrc: '/Certificates/Azure.png',
@@ -38,7 +34,6 @@ const certifications: CertData[] = [
     title: 'Galactic Problem Solver',
     issuer: 'NASA International Space Apps Challenge',
     date: 'Oct 2024',
-    link: '#',
     description:
       'Participated in the NASA International Space Apps Challenge 2024 as a Galactic Problem Solver, contributing to innovative space-tech solutions and collaborative project development.',
     imageSrc: '/Certificates/Problemslover.png',
@@ -49,7 +44,6 @@ const certifications: CertData[] = [
     title: 'Art & Technology Award',
     issuer: 'NASA International Space Apps Challenge',
     date: 'Oct 2024',
-    link: '#',
     description:
       'Awarded the Art & Technology Award for developing a creative and technically impactful solution during NASA Space Apps Challenge 2024.',
     imageSrc: '/Certificates/ArtandTech.png',
@@ -57,10 +51,9 @@ const certifications: CertData[] = [
   },
   {
     id: 4,
-    title: 'Power BI for Business Intelligence: Unlocking Data-Driven Decisions',
+    title: 'Power BI for Business Intelligence',
     issuer: 'IEEE Information Theory Society, Dayananda Sagar University',
     date: 'Oct 2024',
-    link: '#',
     description:
       'Completed a workshop on Microsoft Power BI covering data import, transformation, dashboard creation, visualizations, maps, slicers, and business intelligence reporting.',
     imageSrc: '/Certificates/PowerBi.png',
@@ -71,7 +64,6 @@ const certifications: CertData[] = [
     title: 'Python (Basic)',
     issuer: 'HackerRank',
     date: 'Jan 2026',
-    link: '#',
     description:
       'Validated foundational Python programming skills including problem-solving, syntax understanding, and core programming concepts.',
     imageSrc: '/Certificates/Hakerrank.png',
@@ -82,7 +74,6 @@ const certifications: CertData[] = [
     title: 'Hackverse 2025',
     issuer: 'IEEE Information Theory Society, Dayananda Sagar University',
     date: '2025',
-    link: '#',
     description:
       'Participated in Hackverse 2025, applying skills in React Native, Retrieval-Augmented Generation (RAG), Google Gemini, Node.js, Tailwind CSS, and effective pitching and communication.',
     imageSrc: '/Certificates/Hackverse.png',
@@ -93,7 +84,6 @@ const certifications: CertData[] = [
     title: 'Global Nominee 2025',
     issuer: 'NASA International Space Apps Challenge',
     date: 'Oct 2025',
-    link: '#',
     description:
       'Recognized as a Global Nominee in NASA International Space Apps Challenge 2025 for an innovative project integrating React Native, Machine Learning, Tailwind CSS, and MongoDB.',
     imageSrc: '/Certificates/GlobalNominee.png',
@@ -101,181 +91,285 @@ const certifications: CertData[] = [
   },
 ];
 
-/* ─── Component ──────────────────────────────────────────────────────────── */
+const N = certifications.length;
+
+// Each cert occupies 1 scroll "step". Total pinned scroll = N steps.
+// We give the section extra scroll height: 100vh (initial view) + N * 80vh (one step per cert).
+const STEP_VH = 80;
 
 export default function Certifications() {
-  const [activeCert, setActiveCert] = useState<CertData | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
-  const certItemsRef = useRef<HTMLDivElement[]>([]);
+  const sectionRef = useRef<HTMLElement>(null);
+  const stickyRef = useRef<HTMLDivElement>(null);
+  const progressRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => setIsClient(true), []);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeIndexRef = useRef(0);
 
-  const handleCertHover = useCallback((cert: CertData) => {
-    if (activeCert !== cert) {
-      setActiveCert(cert);
+  // Animate the progress bar for the active tab
+  const animateProgress = useCallback((index: number, fill: number) => {
+    const bar = progressRefs.current[index];
+    if (bar) {
+      bar.style.transform = `scaleX(${fill})`;
     }
-  }, [activeCert]);
-
-  const handleMouseLeave = useCallback(() => {
-    setActiveCert(null);
   }, []);
 
-  const handleCertClick = (cert: CertData) => {
-    if (cert.link) window.open(cert.link, '_blank', 'noopener,noreferrer');
-  };
+  useGSAP(
+    () => {
+      const section = sectionRef.current;
+      const sticky = stickyRef.current;
+      if (!section || !sticky) return;
 
-  useGSAP(() => {
-    if (!isClient || !containerRef.current) return;
-    const ctx = gsap.context(() => {
-      const headerEl = headerRef.current;
-      const certItems = certItemsRef.current.filter(Boolean);
-      if (!headerEl || certItems.length === 0) return;
+      // Pin the sticky panel for the full scrollable height of the section
+      ScrollTrigger.create({
+        trigger: section,
+        start: 'top top',
+        end: 'bottom bottom',
+        pin: sticky,
+        pinSpacing: false,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+        onUpdate(self) {
+          // progress goes 0 → 1 over the entire pinned scroll distance
+          const raw = self.progress * N; // 0 → N
+          const newIndex = Math.min(N - 1, Math.floor(raw));
+          // how far through this current step (0→1)
+          const stepFrac = raw - Math.floor(raw);
 
-      gsap.set(headerEl, { opacity: 0, y: 28 });
-      gsap.set(certItems, { opacity: 0, y: 20, scale: 0.99 });
+          if (newIndex !== activeIndexRef.current) {
+            const prevIndex = activeIndexRef.current;
+            const goingForward = newIndex > prevIndex;
 
-      gsap.to(headerEl, {
-        opacity: 1,
-        y: 0,
-        duration: 0.28,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: 'top 95%',
-          toggleActions: 'play none none none',
-          once: true,
+            // Zero out old progress bar
+            animateProgress(prevIndex, goingForward ? 1 : 0);
+            activeIndexRef.current = newIndex;
+            setActiveIndex(newIndex);
+
+            // Kill any in-flight tweens on both panels so they don't fight
+            const outPanel = panelRefs.current[prevIndex];
+            const inPanel = panelRefs.current[newIndex];
+
+            if (outPanel) {
+              gsap.killTweensOf(outPanel);
+              gsap.to(outPanel, {
+                opacity: 0,
+                y: goingForward ? -24 : 24,
+                duration: 0.35,
+                ease: 'power2.in',
+              });
+            }
+            if (inPanel) {
+              gsap.killTweensOf(inPanel);
+              gsap.fromTo(
+                inPanel,
+                { opacity: 0, y: goingForward ? 36 : -36 },
+                { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out', delay: 0.04 }
+              );
+            }
+          }
+
+          // Fill progress bar for active step
+          animateProgress(newIndex, stepFrac);
         },
-      });
-
-      ScrollTrigger.batch(certItems, {
-        start: 'top 96%',
-        once: true,
-        onEnter: (batch) => {
-          gsap.to(batch, {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.3,
-            stagger: 0.05,
-            ease: 'power2.out',
-            overwrite: 'auto',
+        onLeave() {
+          animateProgress(N - 1, 1);
+        },
+        onLeaveBack() {
+          // Reset every panel: hide all except index 0 which gets re-animated in
+          panelRefs.current.forEach((panel, i) => {
+            if (!panel) return;
+            gsap.killTweensOf(panel);
+            if (i === 0) {
+              gsap.fromTo(panel, { opacity: 0, y: -36 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' });
+            } else {
+              gsap.set(panel, { opacity: 0, y: 36 });
+            }
           });
+          progressRefs.current.forEach((bar) => {
+            if (bar) bar.style.transform = 'scaleX(0)';
+          });
+          activeIndexRef.current = 0;
+          setActiveIndex(0);
         },
       });
+
+      // Animate first panel in on mount
+      const firstPanel = panelRefs.current[0];
+      if (firstPanel) {
+        gsap.fromTo(firstPanel, { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', delay: 0.2 });
+      }
 
       ScrollTrigger.refresh();
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, [isClient]);
-
-  if (!isClient) return null;
+    },
+    { scope: sectionRef }
+  );
 
   return (
     <section
-      ref={containerRef}
+      ref={sectionRef}
       id="certifications"
-      className="relative bg-white dark:bg-black transition-colors duration-300 overflow-hidden"
+      className="relative bg-white dark:bg-black"
+      // Total height: 100vh for the initial view + STEP_VH*N for each cert step
+      style={{ height: `calc(100vh + ${N * STEP_VH}vh)` }}
     >
-      {/* Background orbs */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 -right-32 w-100 h-100 rounded-full bg-gray-100 dark:bg-zinc-900/30 blur-[100px] opacity-50" />
-        <div className="absolute bottom-0 -left-24 w-87.5 h-87.5 rounded-full bg-gray-200 dark:bg-zinc-800/20 blur-[90px] opacity-40" />
-      </div>
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-10 lg:px-16 py-20 sm:py-24 lg:py-32">
-
+      {/* Sticky container — fills the viewport, pinned by GSAP */}
+      <div
+        ref={stickyRef}
+        className="h-screen w-full flex flex-col"
+      >
         {/* Header */}
-        <div ref={headerRef} className="mb-12 sm:mb-16 flex flex-col gap-4">
-          <div className="inline-flex items-center gap-2 w-fit px-4 py-1.5 rounded-full border border-gray-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/60 backdrop-blur text-sm font-light text-gray-500 dark:text-gray-400">
+        <div className="max-w-7xl mx-auto w-full px-4 sm:px-10 lg:px-16 pt-16 sm:pt-20 lg:pt-24 pb-6 shrink-0">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gray-200 dark:border-zinc-700 bg-white/70 dark:bg-zinc-900/60 text-sm font-light text-gray-500 dark:text-gray-400">
             <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500" />
             Credentials
           </div>
-          <h2 className="text-4xl sm:text-5xl lg:text-7xl font-semibold tracking-tight text-black dark:text-white leading-[1.05]">
+          <h2 className="mt-3 text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-black dark:text-white leading-[1.05]">
             Certifications
           </h2>
-          <p className="text-sm sm:text-base lg:text-lg font-light text-gray-600 dark:text-gray-400 max-w-xl leading-relaxed">
-            Validated milestones in my learning journey — each one a step toward mastery.
-          </p>
         </div>
 
-        {/* Certifications list */}
-        <div
-          ref={listRef}
-          className="relative"
-          onMouseLeave={handleMouseLeave}
-        >
-          {certifications.map((cert, index) => (
-            <div
-              key={cert.id}
-              ref={(el) => { if (el) certItemsRef.current[index] = el; }}
-              className={`group relative overflow-hidden flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6 py-6 border-b border-gray-200 dark:border-zinc-800 cursor-pointer transition-all duration-300 md:hover:px-2 ${activeCert?.id === cert.id ? 'bg-black/2 dark:bg-white/2 rounded-xl md:pr-96 lg:pr-104' : ''
-                }`}
-              onMouseEnter={() => handleCertHover(cert)}
-              onClick={() => handleCertClick(cert)}
-            >
-              <div className="relative z-0 flex-1 min-w-0 max-w-full">
-                {/* Issuer + Date */}
-                <div className="flex items-center gap-3 mb-1.5">
-                  <span className="text-xs font-medium tracking-widest uppercase text-gray-400 dark:text-gray-500">
-                    {cert.issuer}
-                  </span>
-                  <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-zinc-600" />
-                  <span className="text-xs font-light text-gray-400 dark:text-gray-500">
-                    {cert.date}
-                  </span>
+        {/* Two-column body */}
+        <div className="flex-1 min-h-0 max-w-7xl mx-auto w-full px-4 sm:px-10 lg:px-16 pb-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
+
+          {/* LEFT — tab list */}
+          <div className="lg:col-span-5 flex flex-col justify-center gap-0 overflow-y-auto">
+            {certifications.map((cert, index) => {
+              const isActive = index === activeIndex;
+              return (
+                <div
+                  key={cert.id}
+                  className="relative group border-b border-gray-100 dark:border-zinc-800/70 last:border-b-0"
+                >
+                  {/* Thin progress bar underline */}
+                  <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-transparent overflow-hidden">
+                    <div
+                      ref={(el) => { progressRefs.current[index] = el; }}
+                      className="h-full w-full origin-left bg-black dark:bg-white"
+                      style={{ transform: 'scaleX(0)', transition: 'none' }}
+                    />
+                  </div>
+
+                  <button
+                    className={[
+                      'w-full text-left py-4 lg:py-5 pr-4 transition-all duration-500 ease-out',
+                      isActive ? 'opacity-100' : 'opacity-40 hover:opacity-65',
+                    ].join(' ')}
+                    onClick={() => {
+                      // Scroll to the corresponding step
+                      const section = sectionRef.current;
+                      if (!section) return;
+                      const rect = section.getBoundingClientRect();
+                      const sectionTop = window.scrollY + rect.top;
+                      const stepHeight = (section.offsetHeight - window.innerHeight) / N;
+                      window.scrollTo({ top: sectionTop + index * stepHeight, behavior: 'smooth' });
+                    }}
+                  >
+                    <div className="flex items-start gap-3">
+                      <span
+                        className={[
+                          'mt-0.5 text-xs font-mono tabular-nums shrink-0 transition-colors duration-300',
+                          isActive ? 'text-black dark:text-white' : 'text-gray-400 dark:text-zinc-600',
+                        ].join(' ')}
+                      >
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                      <div className="min-w-0">
+                        <p
+                          className={[
+                            'font-medium leading-snug transition-all duration-500',
+                            isActive
+                              ? 'text-sm sm:text-base text-black dark:text-white'
+                              : 'text-sm text-gray-500 dark:text-zinc-500',
+                          ].join(' ')}
+                        >
+                          {cert.title}
+                        </p>
+                        <p
+                          className={[
+                            'text-xs mt-0.5 transition-all duration-500',
+                            isActive
+                              ? 'text-gray-500 dark:text-zinc-400 opacity-100 max-h-8'
+                              : 'opacity-0 max-h-0',
+                          ].join(' ')}
+                        >
+                          {cert.issuer} · {cert.date}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* RIGHT — detail panel */}
+          <div className="hidden lg:flex lg:col-span-7 flex-col justify-center relative">
+            {certifications.map((cert, index) => (
+              <div
+                key={cert.id}
+                ref={(el) => { panelRefs.current[index] = el; }}
+                className="absolute inset-0 flex flex-col justify-center gap-6"
+                style={{
+                  opacity: index === 0 ? 0 : 0,
+                  // Initial state set; GSAP will animate to final
+                  pointerEvents: index === activeIndex ? 'auto' : 'none',
+                }}
+              >
+                {/* Certificate image */}
+                <div className="relative w-full aspect-[4/3] max-h-[52vh] rounded-2xl overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100/60 dark:from-zinc-900/70 dark:to-zinc-800/40 border border-gray-200/60 dark:border-zinc-700/40 shadow-[0_24px_64px_-20px_rgba(0,0,0,0.15)] dark:shadow-[0_24px_64px_-20px_rgba(0,0,0,0.5)]">
+                  <Image
+                    src={cert.imageSrc}
+                    alt={cert.imageAlt}
+                    fill
+                    className="object-contain p-6"
+                    sizes="(min-width: 1024px) 48vw, 100vw"
+                    priority={index === 0}
+                  />
                 </div>
 
-                {/* Title */}
-                <h3
-                  className={`text-xl sm:text-2xl lg:text-4xl font-medium tracking-tight mb-1 sm:mb-2 transition-colors duration-200 ${activeCert?.id === cert.id ? 'text-black dark:text-white' : 'text-gray-700 dark:text-gray-300'
-                    }`}
-                >
-                  {cert.title}
-                </h3>
+                {/* Text details */}
+                <div>
+                  <p className="text-xs uppercase tracking-[0.15em] text-gray-400 dark:text-zinc-500 font-medium">
+                    {cert.issuer} · {cert.date}
+                  </p>
+                  <h3 className="mt-2 text-xl sm:text-2xl font-semibold tracking-tight text-black dark:text-white leading-snug">
+                    {cert.title}
+                  </h3>
+                  <p className="mt-3 text-sm sm:text-base font-light leading-relaxed text-gray-600 dark:text-gray-400 max-w-lg">
+                    {cert.description}
+                  </p>
+                </div>
 
-                {/* Description */}
-                <p className="text-xs sm:text-sm lg:text-base font-light text-gray-500 dark:text-gray-400 leading-relaxed max-w-2xl line-clamp-3 sm:line-clamp-none">
-                  {cert.description}
+                {/* Counter */}
+                <p className="text-xs font-mono text-gray-300 dark:text-zinc-700 tabular-nums">
+                  {String(index + 1).padStart(2, '0')} / {String(N).padStart(2, '0')}
                 </p>
               </div>
+            ))}
+          </div>
 
-              {/* Arrow button */}
-              <button
-                className={`relative z-10 self-start md:self-center shrink-0 md:mr-3 p-2.5 sm:p-3 rounded-full border transition-all duration-300 ${activeCert?.id === cert.id
-                  ? 'bg-black dark:bg-white border-black dark:border-white text-white dark:text-black'
-                  : 'border-gray-200 dark:border-zinc-700 text-gray-400 dark:text-gray-500 group-hover:border-black dark:group-hover:border-white group-hover:text-black dark:group-hover:text-white'
-                  }`}
-              >
-                <MoveUpRight className="w-4 h-4 sm:w-5 sm:h-5" />
-              </button>
-
-              <div
-                className={`hidden md:flex pointer-events-none absolute z-30 inset-y-0 right-0 w-72 items-center justify-center overflow-hidden shadow-xl shadow-black/15 transition-all duration-500 ease-out ${activeCert?.id === cert.id
-                  ? 'translate-x-0 opacity-100'
-                  : 'translate-x-full opacity-0'
-                  }`}
-              >
-                <Image
-                  src={cert.imageSrc}
-                  alt={cert.imageAlt}
-                  width={1200}
-                  height={800}
-                  className="h-full w-auto object-contain"
-                  sizes="288px"
-                />
-              </div>
-
-              {/* Hover underline indicator */}
-              <div
-                className={`absolute bottom-0 left-0 h-[1.5px] bg-black dark:bg-white transition-all duration-300 ease-out ${activeCert?.id === cert.id ? 'w-full opacity-100' : 'w-0 opacity-0'
-                  }`}
-              />
+          {/* Mobile — stacked image */}
+          <div className="lg:hidden col-span-1">
+            <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-gray-50 dark:bg-zinc-900/40 border border-gray-200/60 dark:border-zinc-700/40">
+              {certifications.map((cert, index) => (
+                <div
+                  key={cert.id}
+                  className="absolute inset-0 transition-opacity duration-500"
+                  style={{ opacity: index === activeIndex ? 1 : 0, zIndex: index === activeIndex ? 2 : 1 }}
+                >
+                  <Image src={cert.imageSrc} alt={cert.imageAlt} fill className="object-contain p-4" sizes="92vw" />
+                </div>
+              ))}
             </div>
-          ))}
+            <div className="mt-4">
+              <p className="text-xs uppercase tracking-[0.15em] text-gray-400 dark:text-zinc-500">
+                {certifications[activeIndex].issuer} · {certifications[activeIndex].date}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+                {certifications[activeIndex].description}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
