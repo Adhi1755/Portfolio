@@ -24,20 +24,27 @@ export default function SmoothScroll() {
         // Sync Lenis scroll with GSAP ScrollTrigger
         lenis.on("scroll", ScrollTrigger.update);
 
-        // Define the update function for GSAP ticker
         const update = (time: number) => {
             lenis.raf(time * 1000);
         };
 
-        // Use GSAP ticker to update Lenis on every frame
         gsap.ticker.add(update);
+        // Use a small lag smoothing instead of 0 to avoid frame storm on tab re-focus
+        gsap.ticker.lagSmoothing(500, 33);
 
-        // Turn off GSAP's default lag smoothing to avoid conflicts with Lenis
-        gsap.ticker.lagSmoothing(0);
+        // Pause ticker when tab is hidden, resume when visible — prevents heat buildup
+        const handleVisibility = () => {
+            if (document.hidden) {
+                gsap.ticker.sleep();
+            } else {
+                gsap.ticker.wake();
+            }
+        };
+        document.addEventListener('visibilitychange', handleVisibility);
 
         return () => {
-            // Cleanup
             gsap.ticker.remove(update);
+            document.removeEventListener('visibilitychange', handleVisibility);
             lenis.destroy();
         };
     }, []);

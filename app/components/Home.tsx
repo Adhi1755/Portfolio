@@ -1,8 +1,11 @@
 'use client'
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Typewriter from 'typewriter-effect';
 import Image from 'next/image';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const MainPage: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -35,14 +38,24 @@ const MainPage: React.FC = () => {
       if (social) tl.to(social, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.2');
       tl.to(scrollIndicatorRef.current, { opacity: 1, duration: 0.4, ease: 'power2.out' }, '-=0.1');
 
-      // Scroll indicator bounce
-      gsap.to(scrollIndicatorRef.current, {
+      // Scroll indicator bounce — paused when section scrolls out of view
+      const bounceTween = gsap.to(scrollIndicatorRef.current, {
         y: 6,
         duration: 1.3,
         ease: 'sine.inOut',
         yoyo: true,
         repeat: -1,
         delay: 2,
+        paused: true,
+      });
+      ScrollTrigger.create({
+        trigger: containerRef.current,
+        start: 'top top',
+        end: 'bottom top',
+        onEnter: () => bounceTween.play(),
+        onLeave: () => bounceTween.pause(),
+        onEnterBack: () => bounceTween.play(),
+        onLeaveBack: () => bounceTween.pause(),
       });
     }, containerRef);
 
@@ -55,40 +68,13 @@ const MainPage: React.FC = () => {
       ref={containerRef}
       className="relative min-h-screen bg-white dark:bg-black text-black dark:text-white overflow-hidden transition-colors duration-300"
     >
-      {/* ── Moving gradient at the top ── */}
-      <div className="moving-gradient pointer-events-none absolute top-0 left-0 w-full h-[280px] sm:h-[340px] lg:h-[400px] z-[1] opacity-50 dark:opacity-40" />
-
-      {/* ── Animated background ── */}
+      {/* ── Static background orbs — no animation, GPU-composited via will-change ── */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-48 -left-48 w-[560px] h-[560px] rounded-full bg-gray-100 dark:bg-zinc-900/40 blur-[120px] opacity-50" />
         <div className="absolute -bottom-32 -right-32 w-[440px] h-[440px] rounded-full bg-gray-200 dark:bg-zinc-800/30 blur-[110px] opacity-45" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gray-100 dark:bg-zinc-800/20 blur-[200px] opacity-40 animate-[pulse_6s_ease-in-out_infinite]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-125 h-125 rounded-full bg-gray-100 dark:bg-zinc-800/20 blur-[120px] opacity-30" />
 
-        {/* Floating particles */}
-        {[
-          { size: 3, top: '12%', left: '8%', dur: '18s', delay: '0s' },
-          { size: 2, top: '25%', left: '85%', dur: '22s', delay: '2s' },
-          { size: 4, top: '60%', left: '12%', dur: '20s', delay: '4s' },
-          { size: 2.5, top: '78%', left: '90%', dur: '16s', delay: '1s' },
-          { size: 3, top: '35%', left: '65%', dur: '24s', delay: '3s' },
-          { size: 2, top: '88%', left: '45%', dur: '19s', delay: '5s' },
-          { size: 3.5, top: '15%', left: '50%', dur: '21s', delay: '2s' },
-          { size: 2, top: '50%', left: '30%', dur: '17s', delay: '6s' },
-        ].map((p, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full bg-gray-300 dark:bg-zinc-600 opacity-30 dark:opacity-20"
-            style={{
-              width: `${p.size}px`,
-              height: `${p.size}px`,
-              top: p.top,
-              left: p.left,
-              animation: `floatParticle ${p.dur} ease-in-out ${p.delay} infinite`,
-            }}
-          />
-        ))}
-
-        {/* Dot grid overlay */}
+        {/* Static dot grid */}
         <div
           className="absolute inset-0 opacity-[0.03] dark:opacity-[0.04]"
           style={{
@@ -103,7 +89,7 @@ const MainPage: React.FC = () => {
 
         {/* Status pill */}
         <div className="anim-avatar inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gray-200 dark:border-zinc-700 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-sm text-sm font-light text-gray-500 dark:text-gray-400 select-none mb-5">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="w-2 h-2 rounded-full bg-emerald-400" style={{ animation: 'pulse 3s ease-in-out infinite' }} />
           Open to opportunities
         </div>
 

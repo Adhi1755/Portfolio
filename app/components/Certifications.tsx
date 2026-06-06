@@ -106,11 +106,12 @@ export default function Certifications() {
   const [activeIndex, setActiveIndex] = useState(0);
   const activeIndexRef = useRef(0);
 
-  // Animate the progress bar for the active tab
+  // Animate the progress bar — fades to low opacity once fully filled
   const animateProgress = useCallback((index: number, fill: number) => {
     const bar = progressRefs.current[index];
     if (bar) {
       bar.style.transform = `scaleX(${fill})`;
+      bar.style.opacity = fill >= 1 ? '0.2' : '1';
     }
   }, []);
 
@@ -208,66 +209,70 @@ export default function Certifications() {
     <section
       ref={sectionRef}
       id="certifications"
-      className="relative bg-white dark:bg-black"
-      // Total height: 100vh for the initial view + STEP_VH*N for each cert step
+      className="relative bg-white dark:bg-black transition-colors duration-300"
       style={{ height: `calc(100vh + ${N * STEP_VH}vh)` }}
     >
-      {/* Sticky container — fills the viewport, pinned by GSAP */}
-      <div
-        ref={stickyRef}
-        className="h-screen w-full flex flex-col"
-      >
-        {/* Header */}
-        <div className="max-w-7xl mx-auto w-full px-4 sm:px-10 lg:px-16 pt-16 sm:pt-20 lg:pt-24 pb-6 shrink-0">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gray-200 dark:border-zinc-700 bg-white/70 dark:bg-zinc-900/60 text-sm font-light text-gray-500 dark:text-gray-400">
+      {/* Background orbs — matches About / Projects */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute top-0 right-0 w-112.5 h-112.5 rounded-full bg-gray-100 dark:bg-zinc-900/30 blur-[100px] opacity-60" />
+        <div className="absolute bottom-0 left-0 w-87.5 h-87.5 rounded-full bg-gray-200 dark:bg-zinc-800/20 blur-[90px] opacity-50" />
+      </div>
+
+      {/* Sticky container — pinned by GSAP */}
+      <div ref={stickyRef} className="relative z-10 h-screen w-full flex flex-col">
+
+        {/* Header — matches py-20 sm:py-24 lg:py-32 pattern, top-only since body fills rest */}
+        <div className="max-w-7xl mx-auto w-full px-4 sm:px-10 lg:px-16 pt-20 sm:pt-24 lg:pt-32 pb-8 shrink-0">
+          <div className="inline-flex items-center gap-2 w-fit px-4 py-1.5 rounded-full border border-gray-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/60 backdrop-blur text-sm font-light text-gray-500 dark:text-gray-400">
             <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500" />
             Credentials
           </div>
-          <h2 className="mt-3 text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-black dark:text-white leading-[1.05]">
+          <h2 className="mt-4 text-4xl sm:text-5xl lg:text-7xl font-semibold tracking-tight text-black dark:text-white leading-[1.05]">
             Certifications
           </h2>
+          <p className="mt-3 text-sm sm:text-base lg:text-lg font-light text-gray-600 dark:text-gray-400 max-w-xl leading-relaxed">
+            Milestones and recognitions earned across AI, cloud, and engineering.
+          </p>
         </div>
 
         {/* Two-column body */}
-        <div className="flex-1 min-h-0 max-w-7xl mx-auto w-full px-4 sm:px-10 lg:px-16 pb-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
+        <div className="flex-1 min-h-0 max-w-7xl mx-auto w-full px-4 sm:px-10 lg:px-16 pb-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
 
           {/* LEFT — tab list */}
-          <div className="lg:col-span-5 flex flex-col justify-center gap-0 overflow-y-auto">
+          <div className="lg:col-span-5 flex flex-col justify-center overflow-y-auto">
             {certifications.map((cert, index) => {
               const isActive = index === activeIndex;
               return (
                 <div
                   key={cert.id}
-                  className="relative group border-b border-gray-100 dark:border-zinc-800/70 last:border-b-0"
+                  className="relative border-b border-gray-200 dark:border-zinc-800 last:border-b-0"
                 >
-                  {/* Thin progress bar underline */}
-                  <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-transparent overflow-hidden">
+                  {/* Animated progress bar */}
+                  <div className="absolute bottom-0 left-0 right-0 h-[1.5px] overflow-hidden">
                     <div
                       ref={(el) => { progressRefs.current[index] = el; }}
                       className="h-full w-full origin-left bg-black dark:bg-white"
-                      style={{ transform: 'scaleX(0)', transition: 'none' }}
+                      style={{ transform: 'scaleX(0)', transition: 'opacity 0.4s ease' }}
                     />
                   </div>
 
                   <button
                     className={[
                       'w-full text-left py-4 lg:py-5 pr-4 transition-all duration-500 ease-out',
-                      isActive ? 'opacity-100' : 'opacity-40 hover:opacity-65',
+                      isActive ? 'opacity-100' : 'opacity-35 hover:opacity-60',
                     ].join(' ')}
                     onClick={() => {
-                      // Scroll to the corresponding step
                       const section = sectionRef.current;
                       if (!section) return;
-                      const rect = section.getBoundingClientRect();
-                      const sectionTop = window.scrollY + rect.top;
+                      const sectionTop = window.scrollY + section.getBoundingClientRect().top;
                       const stepHeight = (section.offsetHeight - window.innerHeight) / N;
                       window.scrollTo({ top: sectionTop + index * stepHeight, behavior: 'smooth' });
                     }}
                   >
-                    <div className="flex items-start gap-3">
+                    <div className="flex items-start gap-4">
                       <span
                         className={[
-                          'mt-0.5 text-xs font-mono tabular-nums shrink-0 transition-colors duration-300',
+                          'mt-0.5 text-sm font-mono tabular-nums shrink-0 transition-colors duration-300',
                           isActive ? 'text-black dark:text-white' : 'text-gray-400 dark:text-zinc-600',
                         ].join(' ')}
                       >
@@ -276,20 +281,20 @@ export default function Certifications() {
                       <div className="min-w-0">
                         <p
                           className={[
-                            'font-medium leading-snug transition-all duration-500',
+                            'leading-snug transition-all duration-500',
                             isActive
-                              ? 'text-sm sm:text-base text-black dark:text-white'
-                              : 'text-sm text-gray-500 dark:text-zinc-500',
+                              ? 'text-base sm:text-lg font-semibold text-black dark:text-white'
+                              : 'text-sm sm:text-base font-light text-gray-600 dark:text-zinc-400',
                           ].join(' ')}
                         >
                           {cert.title}
                         </p>
                         <p
                           className={[
-                            'text-xs mt-0.5 transition-all duration-500',
+                            'text-xs font-light tracking-wide transition-all duration-500 overflow-hidden',
                             isActive
-                              ? 'text-gray-500 dark:text-zinc-400 opacity-100 max-h-8'
-                              : 'opacity-0 max-h-0',
+                              ? 'text-gray-500 dark:text-zinc-400 opacity-100 max-h-6 mt-1'
+                              : 'opacity-0 max-h-0 mt-0',
                           ].join(' ')}
                         >
                           {cert.issuer} · {cert.date}
@@ -302,21 +307,20 @@ export default function Certifications() {
             })}
           </div>
 
-          {/* RIGHT — detail panel */}
+          {/* RIGHT — detail panel (desktop only) */}
           <div className="hidden lg:flex lg:col-span-7 flex-col justify-center relative">
             {certifications.map((cert, index) => (
               <div
                 key={cert.id}
                 ref={(el) => { panelRefs.current[index] = el; }}
-                className="absolute inset-0 flex flex-col justify-center gap-6"
+                className="absolute inset-0 flex flex-col justify-center gap-5"
                 style={{
-                  opacity: index === 0 ? 0 : 0,
-                  // Initial state set; GSAP will animate to final
+                  opacity: 0,
                   pointerEvents: index === activeIndex ? 'auto' : 'none',
                 }}
               >
                 {/* Certificate image */}
-                <div className="relative w-full aspect-[4/3] max-h-[52vh] rounded-2xl overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100/60 dark:from-zinc-900/70 dark:to-zinc-800/40 border border-gray-200/60 dark:border-zinc-700/40 shadow-[0_24px_64px_-20px_rgba(0,0,0,0.15)] dark:shadow-[0_24px_64px_-20px_rgba(0,0,0,0.5)]">
+                <div className="relative w-full aspect-[4/3] max-h-[50vh] rounded-2xl overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100/60 dark:from-zinc-900/70 dark:to-zinc-800/40 border border-gray-200/60 dark:border-zinc-700/40 shadow-[0_24px_64px_-20px_rgba(0,0,0,0.12)] dark:shadow-[0_24px_64px_-20px_rgba(0,0,0,0.5)]">
                   <Image
                     src={cert.imageSrc}
                     alt={cert.imageAlt}
@@ -329,27 +333,27 @@ export default function Certifications() {
 
                 {/* Text details */}
                 <div>
-                  <p className="text-xs uppercase tracking-[0.15em] text-gray-400 dark:text-zinc-500 font-medium">
+                  <p className="text-xs uppercase tracking-widest text-gray-400 dark:text-zinc-500 font-light">
                     {cert.issuer} · {cert.date}
                   </p>
-                  <h3 className="mt-2 text-xl sm:text-2xl font-semibold tracking-tight text-black dark:text-white leading-snug">
+                  <h3 className="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight text-black dark:text-white leading-snug">
                     {cert.title}
                   </h3>
-                  <p className="mt-3 text-sm sm:text-base font-light leading-relaxed text-gray-600 dark:text-gray-400 max-w-lg">
+                  <p className="mt-3 text-sm sm:text-base lg:text-lg font-light leading-relaxed text-gray-600 dark:text-gray-400 max-w-lg">
                     {cert.description}
                   </p>
                 </div>
 
                 {/* Counter */}
-                <p className="text-xs font-mono text-gray-300 dark:text-zinc-700 tabular-nums">
+                <p className="text-xs font-mono tabular-nums text-gray-300 dark:text-zinc-700">
                   {String(index + 1).padStart(2, '0')} / {String(N).padStart(2, '0')}
                 </p>
               </div>
             ))}
           </div>
 
-          {/* Mobile — stacked image */}
-          <div className="lg:hidden col-span-1">
+          {/* Mobile — stacked card */}
+          <div className="lg:hidden col-span-1 flex flex-col gap-4">
             <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-gray-50 dark:bg-zinc-900/40 border border-gray-200/60 dark:border-zinc-700/40">
               {certifications.map((cert, index) => (
                 <div
@@ -361,15 +365,16 @@ export default function Certifications() {
                 </div>
               ))}
             </div>
-            <div className="mt-4">
-              <p className="text-xs uppercase tracking-[0.15em] text-gray-400 dark:text-zinc-500">
+            <div>
+              <p className="text-xs uppercase tracking-widest text-gray-400 dark:text-zinc-500 font-light">
                 {certifications[activeIndex].issuer} · {certifications[activeIndex].date}
               </p>
-              <p className="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+              <p className="mt-2 text-sm sm:text-base font-light leading-relaxed text-gray-600 dark:text-gray-400">
                 {certifications[activeIndex].description}
               </p>
             </div>
           </div>
+
         </div>
       </div>
     </section>
