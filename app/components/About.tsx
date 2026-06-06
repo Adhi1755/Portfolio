@@ -45,12 +45,16 @@ const AboutMeContainer = () => {
   useEffect(() => {
     if (!containerRef.current) return;
     const ctx = gsap.context(() => {
-      gsap.set([leftRef.current, rightRef.current], { opacity: 0 });
-      gsap.set(leftRef.current, { x: -40 });
-      gsap.set(rightRef.current, { x: 40 });
-      const tl = gsap.timeline({ scrollTrigger: { trigger: containerRef.current, start: 'top 85%', end: 'top 30%', scrub: 0.8 } });
-      tl.to(leftRef.current, { opacity: 1, x: 0, duration: 1, ease: 'power3.out' })
-        .to(rightRef.current, { opacity: 1, x: 0, duration: 1, ease: 'power3.out' }, '-=0.7');
+      gsap.set([leftRef.current, rightRef.current], { opacity: 0, y: 40 });
+      ScrollTrigger.create({
+        trigger: containerRef.current,
+        start: 'top 80%',
+        onEnter: () => {
+          gsap.to(leftRef.current, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' });
+          gsap.to(rightRef.current, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', delay: 0.15 });
+        },
+        once: true,
+      });
 
       if (skillsRef.current && skillsHeadingRef.current) {
         gsap.set(skillsHeadingRef.current, { y: 40, opacity: 0 });
@@ -66,8 +70,8 @@ const AboutMeContainer = () => {
   return (
     <div id="about" ref={containerRef} className="relative bg-white dark:bg-black transition-colors duration-300 overflow-hidden">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 right-0 w-[450px] h-[450px] rounded-full bg-gray-100 dark:bg-zinc-900/30 blur-[100px] opacity-60" />
-        <div className="absolute bottom-0 left-0 w-[350px] h-[350px] rounded-full bg-gray-200 dark:bg-zinc-800/20 blur-[90px] opacity-50" />
+        <div className="absolute top-0 right-0 w-112.5 h-112.5 rounded-full bg-gray-100 dark:bg-zinc-900/30 blur-[100px] opacity-60" />
+        <div className="absolute bottom-0 left-0 w-87.5 h-87.5 rounded-full bg-gray-200 dark:bg-zinc-800/20 blur-[90px] opacity-50" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-10 lg:px-16 py-20 sm:py-24 lg:py-32">
@@ -75,11 +79,10 @@ const AboutMeContainer = () => {
         {/* About + avatar */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center mb-16 sm:mb-24 lg:mb-32">
           <div ref={leftRef} className="flex flex-col gap-6">
-            <div className="inline-flex items-center gap-2 w-fit px-4 py-1.5 rounded-full border border-gray-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/60 backdrop-blur text-sm font-light text-gray-500 dark:text-gray-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500" />
-              About Me
-            </div>
-            <h2 className="text-4xl sm:text-5xl lg:text-7xl font-semibold tracking-tight text-black dark:text-white leading-[1.05]">Who I am</h2>
+            <p className="text-xs font-light tracking-[0.25em] uppercase text-gray-400 dark:text-gray-500">
+              02 — About
+            </p>
+            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-semibold tracking-tighter text-black dark:text-white leading-none">Who I am</h2>
             <div className="space-y-3 sm:space-y-4 text-md sm:text-md lg:text-lg font-light leading-relaxed text-gray-600 dark:text-gray-400">
               <p>I am a <span className="text-black dark:text-white font-normal">pre-final year B.Tech student majoring in Computer Science Engineering (Data Science)</span> at Dayananda Sagar University, Bengaluru, with a current <span className="text-black dark:text-white font-normal">CGPA of 8.56</span>.</p>
               <p>Deeply passionate about AI, I focus on solving real-world problems through full-stack development integrated with intelligent systems. Currently upskilling in <span className="text-black dark:text-white font-normal">AI/ML</span> and <span className="text-black dark:text-white font-normal">DSA</span>, with a special interest in <span className="text-black dark:text-white font-normal">Generative AI</span>.</p>
@@ -98,14 +101,14 @@ const AboutMeContainer = () => {
           </div>
 
           <div ref={rightRef} className="flex justify-center lg:justify-end">
-            <div className="relative w-full max-w-[320px] sm:max-w-[400px] lg:max-w-[420px] aspect-[3/4]">
-              <div className="absolute -top-3 -left-2 sm:-left-4 z-20 flex items-center gap-2 sm:gap-2.5 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-2xl px-3 sm:px-4 py-2 sm:py-2.5 shadow-lg shadow-black/5">
-                <svg viewBox="0 0 24 24" className="w-4 h-4 text-gray-600 dark:text-gray-300" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z" /></svg>
-                <div><p className="text-[11px] sm:text-xs font-medium text-black dark:text-white leading-tight">CGPA 8.56</p><p className="text-[9px] sm:text-[10px] text-gray-400 leading-tight">DSU Bengaluru</p></div>
+            <div className="relative w-full max-w-xs sm:max-w-100 lg:max-w-105 aspect-3/4">
+              <div className="absolute -top-4 -left-5 z-20 flex items-center gap-2.5 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-2xl px-4 py-2.5 shadow-lg shadow-black/5">
+                <svg viewBox="0 0 24 24" className="w-4 h-4 text-gray-500 dark:text-gray-400 shrink-0" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z" /></svg>
+                <div><p className="text-xs font-medium text-black dark:text-white leading-tight">CGPA 8.56</p><p className="text-[10px] text-gray-400 dark:text-zinc-500 leading-tight">DSU Bengaluru</p></div>
               </div>
-              <div className="absolute -bottom-3 -right-2 sm:-right-4 z-20 flex items-center gap-2 sm:gap-2.5 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-2xl px-3 sm:px-4 py-2 sm:py-2.5 shadow-lg shadow-black/5">
-                <svg viewBox="0 0 24 24" className="w-4 h-4 text-gray-600 dark:text-gray-300" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
-                <div><p className="text-[11px] sm:text-xs font-medium text-black dark:text-white leading-tight">NASA Award</p><p className="text-[9px] sm:text-[10px] text-gray-400 leading-tight">Space Apps 2024</p></div>
+              <div className="absolute -bottom-4 -right-5 z-20 flex items-center gap-2.5 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-2xl px-4 py-2.5 shadow-lg shadow-black/5">
+                <svg viewBox="0 0 24 24" className="w-4 h-4 text-gray-500 dark:text-gray-400 shrink-0" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+                <div><p className="text-xs font-medium text-black dark:text-white leading-tight">NASA Award</p><p className="text-[10px] text-gray-400 dark:text-zinc-500 leading-tight">Space Apps 2024</p></div>
               </div>
               <div className="w-full h-full rounded-3xl overflow-hidden border border-gray-200 dark:border-zinc-800 bg-gray-100 dark:bg-zinc-900 shadow-2xl shadow-black/10 dark:shadow-black/40">
                 <Image src="/Profile.jpg" alt="Adithya profile" width={600} height={600} className="w-full h-full object-cover grayscale" />
@@ -117,11 +120,10 @@ const AboutMeContainer = () => {
         {/* ── Skills showcase — clean text-only grouped rows ── */}
         <div ref={skillsRef}>
           <div ref={skillsHeadingRef} className="mb-12">
-            <div className="inline-flex items-center gap-2 w-fit px-4 py-1.5 rounded-full border border-gray-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/60 backdrop-blur text-sm font-light text-gray-500 dark:text-gray-400 mb-5">
-              <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500" />
+            <p className="text-xs font-light tracking-[0.25em] uppercase text-gray-400 dark:text-gray-500 mb-4">
               Skills &amp; Technologies
-            </div>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-black dark:text-white">What I work with</h2>
+            </p>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tighter text-black dark:text-white leading-none">What I work with</h2>
           </div>
 
           <div className="space-y-8">

@@ -13,6 +13,7 @@ const MainPage: React.FC = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
+      const pill = containerRef.current?.querySelector('.anim-pill');
       const avatar = containerRef.current?.querySelector('.anim-avatar');
       const name = containerRef.current?.querySelector('.anim-name');
       const subtitle = containerRef.current?.querySelector('.anim-subtitle');
@@ -20,18 +21,20 @@ const MainPage: React.FC = () => {
       const cta = containerRef.current?.querySelector('.anim-cta');
       const social = containerRef.current?.querySelector('.anim-social');
 
-      if (avatar) gsap.set(avatar, { opacity: 0, scale: 0.8, y: 30 });
-      if (name) gsap.set(name, { opacity: 0, y: 50 });
-      if (subtitle) gsap.set(subtitle, { opacity: 0, y: 20 });
-      if (desc) gsap.set(desc, { opacity: 0, y: 20 });
-      if (cta) gsap.set(cta, { opacity: 0, y: 20 });
-      if (social) gsap.set(social, { opacity: 0, y: 15 });
+      if (pill) gsap.set(pill, { opacity: 0, y: 16 });
+      if (avatar) gsap.set(avatar, { opacity: 0, scale: 0.85, y: 24 });
+      if (name) gsap.set(name, { opacity: 0, y: 40 });
+      if (subtitle) gsap.set(subtitle, { opacity: 0, y: 16 });
+      if (desc) gsap.set(desc, { opacity: 0, y: 16 });
+      if (cta) gsap.set(cta, { opacity: 0, y: 16 });
+      if (social) gsap.set(social, { opacity: 0, y: 12 });
       gsap.set(scrollIndicatorRef.current, { opacity: 0 });
 
-      const tl = gsap.timeline({ delay: 0.2 });
+      const tl = gsap.timeline({ delay: 0.15 });
 
-      if (avatar) tl.to(avatar, { opacity: 1, scale: 1, y: 0, duration: 0.8, ease: 'power3.out' });
-      if (name) tl.to(name, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.5');
+      if (pill) tl.to(pill, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' });
+      if (name) tl.to(name, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.3');
+      if (avatar) tl.to(avatar, { opacity: 1, scale: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.5');
       if (subtitle) tl.to(subtitle, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.4');
       if (desc) tl.to(desc, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3');
       if (cta) tl.to(cta, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.3');
@@ -88,29 +91,29 @@ const MainPage: React.FC = () => {
       <div className="relative z-10 max-w-4xl mx-auto px-6 sm:px-10 min-h-screen flex flex-col items-center justify-center text-center py-24 lg:py-16">
 
         {/* Status pill */}
-        <div className="anim-avatar inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gray-200 dark:border-zinc-700 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-sm text-sm font-light text-gray-500 dark:text-gray-400 select-none mb-5">
+        <div className="anim-pill inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gray-200 dark:border-zinc-700 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-sm text-sm font-light text-gray-500 dark:text-gray-400 select-none mb-6">
           <span className="w-2 h-2 rounded-full bg-emerald-400" style={{ animation: 'pulse 3s ease-in-out infinite' }} />
           Open to opportunities
         </div>
 
         {/* Name — massive, center */}
-        <div className="anim-name mb-0">
-          <p className="text-sm sm:text-base font-light text-gray-400 dark:text-gray-500 tracking-widest uppercase mb-1.5">
+        <div className="anim-name mb-1">
+          <p className="text-sm sm:text-base font-light text-gray-400 dark:text-gray-500 tracking-widest uppercase mb-2">
             Hey, I&apos;m
           </p>
-          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold tracking-tighter leading-[0.9] text-black dark:text-white">
+          <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-semibold tracking-tighter leading-none text-black dark:text-white">
             Adithya
           </h1>
         </div>
 
         {/* Avatar — large, no container */}
-        <div className="anim-avatar -my-10">
+        <div className="anim-avatar -my-8">
           <Image
             src="/Avatar.png"
             alt="Adithya — Profile picture"
             width={480}
             height={480}
-            className="w-[300px] h-[300px] sm:w-[340px] sm:h-[340px] lg:w-[350px] lg:h-[350px] object-contain hover:scale-[1.03] transition-transform duration-500"
+            className="w-65 h-65 sm:w-75 sm:h-75 lg:w-80 lg:h-80 object-contain hover:scale-[1.03] transition-transform duration-500"
             priority
           />
         </div>

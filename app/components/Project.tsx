@@ -22,99 +22,98 @@ const images: ImageData[] = [
     id: 1,
     src: '/images/EmbedMindAI.png',
     alt: 'EmbedMindAI',
-    description: "EmbedMindAI — AI-powered PDF embedding and semantic question-answering system.",
+    description: "EmbedMindAI — Semantic PDF Q&A system built with a full RAG pipeline using SentenceTransformers for dense embeddings, ChromaDB as the vector store, and a FastAPI backend. Supports multi-document ingestion, chunk-level retrieval, and context-grounded answer generation.",
     link: 'https://github.com/Adhi1755/EmbedMindAI',
   },
   {
     id: 2,
     src: '/images/SkillSpark.png',
     alt: 'SkillSpark',
-    description: "SkillSpark — AI-powered adaptive learning and interview preparation platform.",
+    description: "SkillSpark — AI-powered adaptive learning platform built at Hackverse. Features dynamically generated quizzes that adjust difficulty based on performance, spaced-repetition flashcards for long-term retention, and an AI coaching layer that personalises interview prep roadmaps.",
     link: 'https://github.com/Adhi1755/SkillSpark',
   },
   {
     id: 3,
     src: '/images/GalaxyGeeks.png',
     alt: 'GalaxyGeeks',
-    description: "GalaxyGeeks — Collaborative team-based project repository.",
+    description: "GalaxyGeeks — Centralised collaborative repository for the GalaxyGeeks team, housing shared utilities, project boilerplates, and cross-team documentation to streamline multi-member development workflows.",
     link: 'https://github.com/Adhi1755/GalaxyGeeks',
   },
   {
     id: 4,
     src: '/images/InventoryManagementSystem.png',
     alt: 'InventoryHub',
-    description: "InventoryHub — Full-stack inventory management system with authentication and real-time stock tracking.",
+    description: "InventoryHub — Full-stack inventory management system with JWT-based authentication, role-based access control, and real-time stock tracking. Supports CRUD operations on products, low-stock alerts, and an analytics dashboard for inventory turnover insights.",
     link: 'https://github.com/Adhi1755/InventoryHub',
   },
   {
     id: 5,
     src: '/images/AgriNova.png',
     alt: 'AgriNova',
-    description: "AgriNova — AI-based agriculture project focused on improving farming analytics and insights.",
+    description: "AgriNova — AI-driven agriculture analytics platform that processes crop yield, soil health, and weather data to surface actionable farming insights. Integrates predictive models to help farmers make data-informed decisions on irrigation, fertilisation, and harvest timing.",
     link: 'https://github.com/Adhi1755/AgriNova',
   },
   {
     id: 6,
     src: '/images/GigEconomy.png',
     alt: 'Gig Economy',
-    description: "Gig Economy — Data analysis project exploring gig workforce trends and economic insights.",
+    description: "Gig Economy — End-to-end data analysis project exploring gig workforce trends across sectors. Combines EDA, statistical analysis, and visualisations to uncover income patterns, regional disparities, and the economic impact of platform-based employment.",
     link: 'https://github.com/Adhi1755/Gig-Economy',
   },
   {
     id: 7,
     src: '/images/PageWhisper.png',
     alt: 'PageWhisper',
-    description: "PageWhisper — RAG-based intelligent document assistant for querying PDF content.",
+    description: "PageWhisper — RAG-based intelligent document assistant that lets users query PDF content in natural language. Chunks and embeds documents at ingestion time, performs similarity search at query time, and returns precise, source-cited answers grounded in the uploaded material.",
     link: 'https://github.com/Adhi1755/PageWhisper',
   },
-  
   {
     id: 8,
     src: '/images/FocusSense.png',
     alt: 'FocusSense',
-    description: "FocusSense — Productivity tracking web application (forked project) for monitoring focus sessions.",
+    description: "FocusSense — Productivity web application (forked and extended) for tracking deep-work focus sessions. Provides session timers, break scheduling, daily streak tracking, and visual analytics to help users identify peak productivity windows.",
     link: 'https://github.com/Adhi1755/FocusSense',
   },
   {
     id: 9,
     src: '/images/Orrery-web-app.png',
     alt: 'Orrery Web App',
-    description: "Orrery Web App — NASA Space Apps Challenge 2024 project simulating the solar system with interactive planetary orbits.",
+    description: "Orrery Web App — NASA Space Apps Challenge 2024 submission simulating real-time solar system dynamics. Renders interactive 3D planetary orbits using orbital mechanics data, with clickable bodies that surface planet facts, mission history, and current ephemeris information.",
     link: 'https://github.com/Adhi1755/Orrery-web-app',
-  },  
+  },
   {
     id: 10,
     src: '/images/Power-Consumption-Demand-Forecasting.png',
     alt: 'Power Consumption Demand Forecasting',
-    description: "Electricity Demand Forecasting — A data-driven ML project predicting future power usage using time series data and weather patterns.",
+    description: "Electricity Demand Forecasting — Time-series ML project predicting future power consumption by combining historical load data with weather features (temperature, humidity, season). Benchmarks multiple regression and LSTM-based models, with residual analysis and demand-curve visualisations.",
     link: 'https://github.com/Adhi1755/Power-Consumption-Demand-Forecasting',
   },
   {
     id: 11,
     src: '/images/SanctionImpact.png',
     alt: 'SanctionImpact',
-    description: "SanctionImpact — AI/NLP deep learning project for analyzing and classifying economic sanction policies.",
+    description: "SanctionImpact — NLP and deep learning project for classifying and analysing economic sanction policy documents. Uses transformer-based text classification to categorise sanction types, extract targeted entities, and quantify projected economic impact scores from policy text.",
     link: 'https://github.com/Adhi1755/SanctionImpact',
   },
   {
     id: 12,
     src: '/images/Pharma-Sales-Analysis.png',
     alt: 'Pharma Sales Analysis',
-    description: "Pharma Sales Analysis — Data-science project forecasting pharmaceutical sales trends using historical data.",
+    description: "Pharma Sales Analysis — Data science project forecasting pharmaceutical product sales using historical transaction data. Applies feature engineering on seasonal and regional variables, evaluates multiple regression models, and visualises sales trends across drug categories and time periods.",
     link: 'https://github.com/Adhi1755/Pharma-Sales-Analysis',
   },
   {
     id: 13,
     src: '/images/Crop-Price-Prediction.png',
     alt: 'Crop Price Prediction',
-    description: "Crop Price Prediction — Machine learning regression model predicting agricultural crop prices.",
+    description: "Crop Price Prediction — ML regression project forecasting agricultural commodity prices from historical market data, crop yield figures, and seasonal indicators. Compares models including Random Forest and Gradient Boosting, with SHAP-based feature importance analysis.",
     link: 'https://github.com/Adhi1755/Crop-Price-Prediction-',
   },
   {
     id: 14,
     src: '/images/Heart_Diseases_Prediction.png',
     alt: 'Heart Diseases Prediction',
-    description: "Heart Disease Prediction — ML classification pipeline identifying at-risk patients using medical indicators.",
+    description: "Heart Disease Prediction — Binary classification pipeline identifying patients at cardiovascular risk using clinical indicators such as cholesterol, blood pressure, and ECG features. Includes preprocessing, class-imbalance handling, and model comparison across Logistic Regression, SVM, and Random Forest.",
     link: 'https://github.com/Adhi1755/Heart_Diseases_Prediction',
   },
 ];
@@ -280,11 +279,10 @@ export default function Projects() {
         {/* Header */}
         <div ref={headerRef} className="mb-12 sm:mb-16 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
           <div className="flex flex-col gap-4">
-            <div className="inline-flex items-center gap-2 w-fit px-4 py-1.5 rounded-full border border-gray-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/60 backdrop-blur text-sm font-light text-gray-500 dark:text-gray-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500" />
-              Recent Works
-            </div>
-            <h2 className="text-4xl sm:text-5xl lg:text-7xl font-semibold tracking-tight text-black dark:text-white leading-[1.05]">
+            <p className="text-xs font-light tracking-[0.25em] uppercase text-gray-400 dark:text-gray-500">
+              03 — Projects
+            </p>
+            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-semibold tracking-tighter text-black dark:text-white leading-none">
               Projects
             </h2>
             <p className="text-sm sm:text-base lg:text-lg font-light text-gray-600 dark:text-gray-400 max-w-xl leading-relaxed">
