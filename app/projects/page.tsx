@@ -163,12 +163,20 @@ function FloatingPreview({ image, isDesktop }: { image: ImageData | null; isDesk
 
   if (!isDesktop || !image) return null;
 
+  // Clamp position to keep preview within viewport
+  const previewW = 420;
+  const previewH = 240;
+  const halfW = previewW / 2;
+  const halfH = previewH / 2;
+  const clampedX = Math.max(halfW + 8, Math.min(cursorPosition.x, (typeof window !== 'undefined' ? window.innerWidth : 1920) - halfW - 8));
+  const clampedY = Math.max(halfH + 8, Math.min(cursorPosition.y, (typeof window !== 'undefined' ? window.innerHeight : 1080) - halfH - 8));
+
   return (
     <div
       className="fixed pointer-events-none z-50 w-105 h-60"
       style={{
-        left: `${cursorPosition.x}px`,
-        top: `${cursorPosition.y}px`,
+        left: `${clampedX}px`,
+        top: `${clampedY}px`,
         transform: 'translate(-50%, -50%)',
       }}
     >

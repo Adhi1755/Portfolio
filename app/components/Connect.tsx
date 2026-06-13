@@ -118,6 +118,14 @@ const ContactComponent = () => {
       ref={sectionRef}
       className="relative bg-white dark:bg-black transition-colors duration-300 overflow-hidden"
     >
+      {/* Background grid */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-[0.025] dark:opacity-[0.04]"
+          style={{ backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '38px 38px' }}
+        />
+      </div>
+
       {/* subtle top divider */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-20 bg-gradient-to-b from-transparent via-gray-200 dark:via-zinc-800 to-transparent" />
 

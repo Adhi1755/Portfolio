@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -106,6 +106,15 @@ export default function Certifications() {
   const [activeIndex, setActiveIndex] = useState(0);
   const activeIndexRef = useRef(0);
 
+  // Client-side desktop detection
+  const [isDesktop, setIsDesktop] = useState(true);
+  useEffect(() => {
+    const check = () => setIsDesktop(window.innerWidth >= 1024);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
   // Animate the progress bar — fades to low opacity once fully filled
   const animateProgress = useCallback((index: number, fill: number) => {
     const bar = progressRefs.current[index];
@@ -210,7 +219,7 @@ export default function Certifications() {
       ref={sectionRef}
       id="certifications"
       className="relative bg-white dark:bg-black transition-colors duration-300"
-      style={{ height: `calc(100vh + ${N * STEP_VH}vh)` }}
+      style={{ height: isDesktop ? `calc(100vh + ${N * STEP_VH}vh)` : 'auto' }}
     >
       {/* Background orbs — matches About / Projects */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -219,7 +228,7 @@ export default function Certifications() {
       </div>
 
       {/* Sticky container — pinned by GSAP */}
-      <div ref={stickyRef} className="relative z-10 h-screen w-full flex flex-col">
+      <div ref={stickyRef} className="relative z-10 lg:h-screen w-full flex flex-col">
 
         {/* Header — matches py-20 sm:py-24 lg:py-32 pattern, top-only since body fills rest */}
         <div className="max-w-7xl mx-auto w-full px-4 sm:px-10 lg:px-16 pt-20 sm:pt-24 lg:pt-32 pb-8 shrink-0">

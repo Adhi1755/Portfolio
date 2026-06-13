@@ -2,6 +2,17 @@
 
 import nodemailer from 'nodemailer';
 
+// Escape HTML entities to prevent XSS in email templates
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export async function POST(request) {
   const { name, email, message } = await request.json();
 
@@ -56,11 +67,16 @@ export async function POST(request) {
     await transporter.verify();
     console.log('SMTP connection verified successfully');
 
+    // Sanitize user input for HTML email
+    const safeName = escapeHtml(name);
+    const safeEmail = escapeHtml(email);
+    const safeMessage = escapeHtml(message);
+
     // Email content
     const mailOptions = {
       from: process.env.EMAIL_USER, // Your email
       to: process.env.EMAIL_USER, // Send to yourself
-      subject: `New Contact Form Submission from ${name}`,
+      subject: `New Contact Form Submission from ${safeName}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <h2 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
@@ -68,14 +84,14 @@ export async function POST(request) {
           </h2>
           
           <div style="background-color: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0;">
-            <p style="margin: 10px 0;"><strong>Name:</strong> ${name}</p>
-            <p style="margin: 10px 0;"><strong>Email:</strong> ${email}</p>
+            <p style="margin: 10px 0;"><strong>Name:</strong> ${safeName}</p>
+            <p style="margin: 10px 0;"><strong>Email:</strong> ${safeEmail}</p>
           </div>
           
           <div style="margin: 20px 0;">
             <h3 style="color: #333; margin-bottom: 10px;">Message:</h3>
             <div style="background-color: #ffffff; padding: 15px; border-left: 4px solid #007bff; border-radius: 0 5px 5px 0;">
-              <p style="margin: 0; line-height: 1.6; white-space: pre-wrap;">${message}</p>
+              <p style="margin: 0; line-height: 1.6; white-space: pre-wrap;">${safeMessage}</p>
             </div>
           </div>
           

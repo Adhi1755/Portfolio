@@ -190,8 +190,10 @@ export default function Header() {
     } else {
       document.body.style.overflow = '';
       gsap.to(menu, { opacity: 0, duration: 0.25, ease: 'power2.in', onComplete: () => { gsap.set(menu, { display: 'none' }); } });
+      // Recalculate desktop indicator after menu close (handles rotation/resize during menu open)
+      setTimeout(moveIndicator, 100);
     }
-  }, [mobileOpen, mounted]);
+  }, [mobileOpen, mounted, moveIndicator]);
 
   /* ─ Theme toggle ─ */
   const toggleTheme = () => {

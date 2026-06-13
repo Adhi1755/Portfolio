@@ -162,12 +162,20 @@ function FloatingPreview({ image, isDesktop }: { image: ImageData | null; isDesk
 
   if (!isDesktop || !image) return null;
 
+  // Clamp position to keep preview within viewport
+  const previewW = 420;
+  const previewH = 240;
+  const halfW = previewW / 2;
+  const halfH = previewH / 2;
+  const clampedX = Math.max(halfW + 8, Math.min(cursorPosition.x, (typeof window !== 'undefined' ? window.innerWidth : 1920) - halfW - 8));
+  const clampedY = Math.max(halfH + 8, Math.min(cursorPosition.y, (typeof window !== 'undefined' ? window.innerHeight : 1080) - halfH - 8));
+
   return (
     <div
       className="fixed pointer-events-none z-50 w-105 h-60"
       style={{
-        left: `${cursorPosition.x}px`,
-        top: `${cursorPosition.y}px`,
+        left: `${clampedX}px`,
+        top: `${clampedY}px`,
         transform: 'translate(-50%, -50%)',
       }}
     >
@@ -272,6 +280,10 @@ export default function Projects() {
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 -right-32 w-[400px] h-[400px] rounded-full bg-gray-100 dark:bg-zinc-900/30 blur-[100px] opacity-50" />
         <div className="absolute bottom-0 -left-24 w-[350px] h-[350px] rounded-full bg-gray-200 dark:bg-zinc-800/20 blur-[90px] opacity-40" />
+        <div
+          className="absolute inset-0 opacity-[0.025] dark:opacity-[0.04]"
+          style={{ backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '38px 38px' }}
+        />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-10 lg:px-16 py-20 sm:py-24 lg:py-32">

@@ -304,7 +304,7 @@ const ContactComponent = () => {
             {/* Social card */}
             <div className="p-7 rounded-3xl border border-gray-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/40 backdrop-blur">
               <h3 className="text-sm font-medium text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-5">Find me on</h3>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 <a
                   href="https://www.linkedin.com/in/adithyanagamuneendran/"
                   target="_blank"
