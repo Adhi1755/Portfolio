@@ -284,23 +284,14 @@ function MobileCertifications() {
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      const cards = sectionRef.current?.querySelectorAll('.cert-card');
-      if (!cards) return;
-      gsap.set(cards, { opacity: 0, y: 32 });
-      ScrollTrigger.batch(cards, {
-        start: 'top 90%',
-        once: true,
-        onEnter: (batch) => gsap.to(batch, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out', stagger: 0.1 }),
-      });
-    }, sectionRef);
-    return () => ctx.revert();
+    // No scroll reveal on mobile — cards render visibly by default
+    ScrollTrigger.refresh();
   }, []);
 
   return (
     <div
       ref={sectionRef}
-      data-section="certifications"
+      id="certifications"
       className="lg:hidden relative bg-white dark:bg-black transition-colors duration-300 overflow-hidden"
     >
       {/* Background grid */}

@@ -53,19 +53,22 @@ const ContactComponent = () => {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    if (window.matchMedia('(pointer: coarse)').matches) return; // skip reveal on touch devices
 
     const ctx = gsap.context(() => {
-      gsap.set([headingRef.current, leftRef.current, rightRef.current], { y: 40, opacity: 0 });
-
-      ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: 'top 80%',
-        onEnter: () => {
-          gsap.to(headingRef.current, { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out' });
-          gsap.to(leftRef.current, { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out', delay: 0.15 });
-          gsap.to(rightRef.current, { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out', delay: 0.28 });
+      gsap.from([headingRef.current, leftRef.current, rightRef.current], {
+        y: 40,
+        opacity: 0,
+        duration: 0.7,
+        ease: 'power3.out',
+        stagger: 0.13,
+        clearProps: 'all',
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 88%',
+          once: true,
+          invalidateOnRefresh: true,
         },
-        once: true,
       });
     }, sectionRef);
 

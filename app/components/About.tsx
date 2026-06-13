@@ -44,24 +44,54 @@ const AboutMeContainer = () => {
 
   useEffect(() => {
     if (!containerRef.current) return;
+    if (window.matchMedia('(pointer: coarse)').matches) return; // skip reveal on touch devices
     const ctx = gsap.context(() => {
-      gsap.set([leftRef.current, rightRef.current], { opacity: 0, y: 40 });
-      ScrollTrigger.create({
-        trigger: containerRef.current,
-        start: 'top 80%',
-        onEnter: () => {
-          gsap.to(leftRef.current, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' });
-          gsap.to(rightRef.current, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', delay: 0.15 });
+      gsap.from([leftRef.current, rightRef.current], {
+        opacity: 0,
+        y: 40,
+        duration: 0.7,
+        ease: 'power3.out',
+        stagger: 0.15,
+        clearProps: 'all',
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: 'top 88%',
+          once: true,
+          invalidateOnRefresh: true,
         },
-        once: true,
       });
 
       if (skillsRef.current && skillsHeadingRef.current) {
-        gsap.set(skillsHeadingRef.current, { y: 40, opacity: 0 });
-        gsap.set(skillsRef.current.querySelectorAll('.skill-row'), { y: 30, opacity: 0 });
-        const stl = gsap.timeline({ scrollTrigger: { trigger: skillsRef.current, start: 'top 88%', end: 'top 40%', scrub: 0.5 } });
-        stl.to(skillsHeadingRef.current, { y: 0, opacity: 1, duration: 0.8, ease: 'power2.out' })
-          .to(skillsRef.current.querySelectorAll('.skill-row'), { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out', stagger: { each: 0.08 } }, '-=0.4');
+        const rows = skillsRef.current.querySelectorAll('.skill-row');
+
+        gsap.from(skillsHeadingRef.current, {
+          y: 40,
+          opacity: 0,
+          duration: 0.6,
+          ease: 'power2.out',
+          clearProps: 'all',
+          scrollTrigger: {
+            trigger: skillsRef.current,
+            start: 'top 90%',
+            once: true,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        gsap.from(rows, {
+          y: 30,
+          opacity: 0,
+          duration: 0.5,
+          ease: 'power2.out',
+          stagger: { each: 0.1 },
+          clearProps: 'all',
+          scrollTrigger: {
+            trigger: skillsRef.current,
+            start: 'top 88%',
+            once: true,
+            invalidateOnRefresh: true,
+          },
+        });
       }
     }, containerRef);
     return () => ctx.revert();

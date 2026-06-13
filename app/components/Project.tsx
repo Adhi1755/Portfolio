@@ -222,10 +222,18 @@ export default function Projects() {
   useGSAP(() => {
     if (!isClient || !containerRef.current) return;
 
+    const isTouch = window.matchMedia('(pointer: coarse)').matches;
+
     const ctx = gsap.context(() => {
       const headerEl = headerRef.current;
       const projectItems = projectItemsRef.current.filter((item): item is HTMLDivElement => Boolean(item));
       if (!headerEl || projectItems.length === 0) return;
+
+      if (isTouch) {
+        // Ensure items are visible on touch devices — no scroll animations.
+        gsap.set([headerEl, ...projectItems], { opacity: 1, y: 0, scale: 1, clearProps: 'all' });
+        return;
+      }
 
       gsap.fromTo(
         headerEl,
@@ -240,6 +248,7 @@ export default function Projects() {
             start: 'top 92%',
             toggleActions: 'play none none none',
             once: true,
+            invalidateOnRefresh: true,
           },
         }
       );

@@ -176,7 +176,6 @@ export default function Header() {
     if (!menu) return;
 
     if (mobileOpen) {
-      // prevent body scroll
       document.body.style.overflow = 'hidden';
       gsap.set(menu, { display: 'flex' });
       gsap.fromTo(menu, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: 'power2.out' });
@@ -190,9 +189,9 @@ export default function Header() {
     } else {
       document.body.style.overflow = '';
       gsap.to(menu, { opacity: 0, duration: 0.25, ease: 'power2.in', onComplete: () => { gsap.set(menu, { display: 'none' }); } });
-      // Recalculate desktop indicator after menu close (handles rotation/resize during menu open)
       setTimeout(moveIndicator, 100);
     }
+    return () => { document.body.style.overflow = ''; };
   }, [mobileOpen, mounted, moveIndicator]);
 
   /* ─ Theme toggle ─ */

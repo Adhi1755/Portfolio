@@ -61,7 +61,7 @@ const MainPage: React.FC = () => {
     <div
       id="home"
       ref={containerRef}
-      className="relative min-h-screen bg-white dark:bg-black overflow-hidden transition-colors duration-300"
+      className="relative min-h-dvh bg-white dark:bg-black overflow-hidden transition-colors duration-300"
     >
       {/* Background */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -74,7 +74,7 @@ const MainPage: React.FC = () => {
       </div>
 
       {/* Content — single centered column */}
-      <div className="relative z-10 max-w-3xl mx-auto px-6 sm:px-10 min-h-screen flex flex-col items-center justify-center text-center py-20">
+      <div className="relative z-10 max-w-3xl mx-auto px-6 sm:px-10 min-h-dvh flex flex-col items-center justify-center text-center py-20">
 
         {/* Label */}
         <p className="h-label text-xs font-light tracking-[0.25em] uppercase text-gray-400 dark:text-gray-600 mb-4">

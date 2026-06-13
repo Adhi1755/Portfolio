@@ -10,7 +10,12 @@ export default function SmoothScroll() {
     const lenisRef = useRef<Lenis | null>(null);
 
     useEffect(() => {
-        // Initialize Lenis
+        // Skip Lenis on touch devices — native scroll syncs with ScrollTrigger correctly there
+        // and Lenis can interfere with scroll-position reporting on mobile
+        const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+        if (isTouchDevice) return;
+
+        // Initialize Lenis (desktop only)
         const lenis = new Lenis({
             duration: 1.2,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
