@@ -51,7 +51,7 @@ export default function Home() {
           pointerEvents: welcomed ? 'auto' : 'none',
         }}
       >
-        <MainPage />
+        <MainPage play={welcomed} />
         <AboutMeContainer />
         <Projects />
         <Certifications />

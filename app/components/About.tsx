@@ -44,7 +44,6 @@ const AboutMeContainer = () => {
 
   useEffect(() => {
     if (!containerRef.current) return;
-    if (window.matchMedia('(pointer: coarse)').matches) return; // skip reveal on touch devices
     const ctx = gsap.context(() => {
       gsap.from([leftRef.current, rightRef.current], {
         opacity: 0,
@@ -55,7 +54,7 @@ const AboutMeContainer = () => {
         clearProps: 'all',
         scrollTrigger: {
           trigger: containerRef.current,
-          start: 'top 88%',
+          start: 'top 90%',
           once: true,
           invalidateOnRefresh: true,
         },
@@ -72,7 +71,7 @@ const AboutMeContainer = () => {
           clearProps: 'all',
           scrollTrigger: {
             trigger: skillsRef.current,
-            start: 'top 90%',
+            start: 'top 92%',
             once: true,
             invalidateOnRefresh: true,
           },
@@ -87,7 +86,7 @@ const AboutMeContainer = () => {
           clearProps: 'all',
           scrollTrigger: {
             trigger: skillsRef.current,
-            start: 'top 88%',
+            start: 'top 90%',
             once: true,
             invalidateOnRefresh: true,
           },

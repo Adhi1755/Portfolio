@@ -7,39 +7,69 @@ import Image from 'next/image';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const MainPage: React.FC = () => {
+// Description split into words so each can be revealed individually.
+// `hl` marks the words that get the high-contrast highlight treatment.
+const DESC_WORDS: { t: string; hl?: boolean }[] = [
+  { t: 'Pre-final' }, { t: 'year' },
+  { t: 'CS', hl: true }, { t: '(Data', hl: true }, { t: 'Science)', hl: true },
+  { t: 'student' }, { t: '—' }, { t: 'building' }, { t: 'intelligent' },
+  { t: 'systems' }, { t: 'with' },
+  { t: 'LLMs,', hl: true }, { t: 'PyTorch,', hl: true }, { t: 'and', hl: true }, { t: 'FastAPI', hl: true },
+  { t: 'and' }, { t: 'shipping' }, { t: 'full-stack' }, { t: 'web' }, { t: 'apps' },
+  { t: 'that' }, { t: 'actually' }, { t: 'work.' },
+];
+
+const HERO_NAME = 'Adithya'.split('');
+
+const MainPage: React.FC<{ play?: boolean }> = ({ play = true }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef    = useRef<HTMLDivElement>(null);
 
+  // Hide everything immediately on mount so the hero is staged (and stays hidden
+  // behind the welcome screen) until `play` triggers the entrance.
   useEffect(() => {
+    const ctx = gsap.context(() => {
+      const items = ['.h-label', '.h-pill', '.h-avatar', '.h-role', '.h-cta', '.h-social']
+        .map((c) => containerRef.current?.querySelector<HTMLElement>(c))
+        .filter((x): x is HTMLElement => x !== null);
+
+      gsap.set([...items, scrollRef.current], { opacity: 0, y: 28 });
+      gsap.set('.h-avatar', { y: 0, scale: 0.93 });
+      gsap.set('.h-name-letter', { yPercent: 115 });
+      gsap.set('.h-desc-word', { yPercent: 115, opacity: 0 });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  // Play the entrance once the welcome screen hands off.
+  useEffect(() => {
+    if (!play) return;
+
     const ctx = gsap.context(() => {
       const el = (cls: string) => containerRef.current?.querySelector<HTMLElement>(cls) ?? null;
 
       const label  = el('.h-label');
       const pill   = el('.h-pill');
-      const name   = el('.h-name');
       const avatar = el('.h-avatar');
       const role   = el('.h-role');
-      const desc   = el('.h-desc');
       const cta    = el('.h-cta');
       const social = el('.h-social');
+      const nameLetters = containerRef.current?.querySelectorAll<HTMLElement>('.h-name-letter') ?? [];
+      const descWords   = containerRef.current?.querySelectorAll<HTMLElement>('.h-desc-word') ?? [];
 
-      const items = [label, pill, name, avatar, role, desc, cta, social, scrollRef.current]
-        .filter((x): x is HTMLElement => x !== null);
-
-      gsap.set(items, { opacity: 0, y: 28 });
-      gsap.set(avatar, { y: 0, scale: 0.93 });
-
-      gsap.timeline({ delay: 0.1 })
-        .to(label,  { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' })
-        .to(pill,   { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, '-=0.2')
-        .to(name,   { opacity: 1, y: 0, duration: 0.75, ease: 'power3.out' }, '-=0.2')
-        .to(avatar, { opacity: 1, scale: 1, duration: 0.85, ease: 'power3.out' }, '-=0.55')
-        .to(role,   { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, '-=0.4')
-        .to(desc,   { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, '-=0.25')
-        .to(cta,    { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, '-=0.2')
-        .to(social, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, '-=0.2')
-        .to(scrollRef.current, { opacity: 1, y: 0, duration: 0.4 }, '-=0.1');
+      gsap.timeline({ delay: 0 })
+        .to(label,  { opacity: 1, y: 0, duration: 0.35, ease: 'power3.out' })
+        .to(pill,   { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }, '-=0.22')
+        // name: per-letter masked slide-up
+        .to(nameLetters, { yPercent: 0, duration: 0.55, ease: 'power4.out', stagger: 0.03 }, '-=0.18')
+        .to(avatar, { opacity: 1, scale: 1, duration: 0.55, ease: 'power3.out' }, '-=0.45')
+        .to(role,   { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }, '-=0.35')
+        // description: word-by-word wave
+        .to(descWords, { yPercent: 0, opacity: 1, duration: 0.4, ease: 'power3.out', stagger: 0.012 }, '-=0.28')
+        .to(cta,    { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }, '-=0.25')
+        .to(social, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }, '-=0.24')
+        .to(scrollRef.current, { opacity: 1, y: 0, duration: 0.3 }, '-=0.18');
 
       const bounce = gsap.to(scrollRef.current, {
         y: 7, duration: 1.3, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 2.5, paused: true,
@@ -55,7 +85,7 @@ const MainPage: React.FC = () => {
     }, containerRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [play]);
 
   return (
     <div
@@ -88,8 +118,12 @@ const MainPage: React.FC = () => {
         </div>
 
         {/* Name */}
-        <h1 className="h-name text-[clamp(3rem,9vw,6.5rem)] font-semibold tracking-tighter leading-none text-black dark:text-white mb-1">
-          Adithya
+        <h1 className="h-name flex justify-center text-[clamp(3rem,9vw,6.5rem)] font-semibold tracking-tighter leading-none text-black dark:text-white mb-1">
+          {HERO_NAME.map((letter, i) => (
+            <span key={i} className="inline-block overflow-hidden pb-[0.12em] -mb-[0.12em]">
+              <span className="h-name-letter inline-block will-change-transform">{letter}</span>
+            </span>
+          ))}
         </h1>
 
         {/* Avatar */}
@@ -116,13 +150,19 @@ const MainPage: React.FC = () => {
         </div>
 
         {/* Description */}
-        <p className="h-desc text-sm sm:text-base font-light leading-relaxed text-gray-500 dark:text-gray-400 max-w-lg mb-6">
-  Pre-final year{' '}
-  <span className="text-black dark:text-white font-normal">CS (Data Science)</span>
-  {' '}student — building intelligent systems with{' '}
-  <span className="text-black dark:text-white font-normal">LLMs, PyTorch, and FastAPI</span>
-  {' '}and shipping full-stack web apps that actually work.
-</p>
+        <p className="h-desc flex flex-wrap items-end justify-center gap-x-[0.28em] gap-y-1 text-sm sm:text-base font-light leading-relaxed text-gray-500 dark:text-gray-400 max-w-lg mb-6">
+          {DESC_WORDS.map((w, i) => (
+            <span key={i} className="inline-block overflow-hidden pb-[0.1em] -mb-[0.1em]">
+              <span
+                className={`h-desc-word inline-block will-change-transform ${
+                  w.hl ? 'text-black dark:text-white font-normal' : ''
+                }`}
+              >
+                {w.t}
+              </span>
+            </span>
+          ))}
+        </p>
 
         {/* CTAs */}
         <div className="h-cta flex flex-wrap items-center justify-center gap-3 mb-6">
