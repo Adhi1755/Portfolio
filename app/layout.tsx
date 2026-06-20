@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import localFont from 'next/font/local'
 import Header from "./components/Navigation";
+import { Analytics } from '@vercel/analytics/next';
 const outfit = localFont({
   src: [
     { path: './fonts/Outfit/Outfit-Light.ttf', weight: '300', style: 'normal' },
@@ -42,7 +43,7 @@ export default function RootLayout({
         <SmoothScroll />
         <Header />
         {children}
-
+        <Analytics />
       </body>
     </html>
   );
