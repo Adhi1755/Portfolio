@@ -1,32 +1,27 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import localFont from 'next/font/local'
+import { Inter, JetBrains_Mono } from "next/font/google";
 import Header from "./components/Navigation";
-const outfit = localFont({
-  src: [
-    { path: './fonts/Outfit/Outfit-Light.ttf', weight: '300', style: 'normal' },
-    { path: './fonts/Outfit/Outfit-Regular.ttf', weight: '400', style: 'normal' },
-    { path: './fonts/Outfit/Outfit-Medium.ttf', weight: '500', style: 'normal' },
-    { path: './fonts/Outfit/Outfit-SemiBold.ttf', weight: '600', style: 'normal' },
-  ],
-  variable: '--font-outfit',
-  display: 'swap',
+import SmoothScroll from "./components/SmoothScroll";
+import CustomCursor from "./components/CustomCursor";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
 });
 
-const moralana = localFont({
-  src: './fonts/moralana/Moralana DEMO.otf',
-  variable: '--font-moralana',
-  display: 'swap',
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-jetbrains",
+  display: "swap",
 });
-
-
 
 export const metadata: Metadata = {
-  title: "Adithya's Portfolio",
-  description: "Adithya's Portfolio using Next.js",
+  title: "Adithya — AI Labs",
+  description: "Adithya Nagamuneendran — AI/ML Engineer & Full-Stack Developer. Building AI systems that learn, adapt, and solve real problems.",
 };
-
-import SmoothScroll from "./components/SmoothScroll";
 
 export default function RootLayout({
   children,
@@ -34,15 +29,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-
-      <body
-        className={`${outfit.variable} ${moralana.variable} antialiased`}
-      >
+    <html lang="en" className="dark">
+      <head>
+        <link rel="preconnect" href="https://api.fontshare.com" />
+        <link
+          href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
         <SmoothScroll />
+        <CustomCursor />
         <Header />
         {children}
-
       </body>
     </html>
   );

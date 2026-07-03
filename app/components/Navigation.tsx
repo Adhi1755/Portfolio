@@ -18,25 +18,11 @@ interface NavItem {
 const navItems: NavItem[] = [
   { name: 'Home', href: '#home', sectionId: 'home' },
   { name: 'About', href: '#about', sectionId: 'about' },
+  { name: 'Journey', href: '#journey', sectionId: 'journey' },
   { name: 'Projects', href: '#projects', sectionId: 'projects' },
-  { name: 'Certs', href: '#certifications', sectionId: 'certifications' },
+  { name: 'Tech', href: '#technology', sectionId: 'technology' },
   { name: 'Contact', href: '#contact', sectionId: 'contact' },
 ];
-
-/* ─── Inline SVG icons ────────────────────────────────────────────────────── */
-
-const SunIcon = () => (
-  <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <circle cx="12" cy="12" r="5" strokeWidth={2} />
-    <path strokeWidth={2} strokeLinecap="round" d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-  </svg>
-);
-
-const MoonIcon = () => (
-  <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-  </svg>
-);
 
 const MenuIcon = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,7 +39,6 @@ const CloseIcon = () => (
 /* ─── Component ───────────────────────────────────────────────────────────── */
 
 export default function Header() {
-  const [isDark, setIsDark] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [isScrolled, setIsScrolled] = useState(false);
@@ -65,18 +50,8 @@ export default function Header() {
   const navItemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
-  /* ─ Mount & theme init ─ */
   useEffect(() => {
     setMounted(true);
-    const savedTheme = localStorage.getItem('theme');
-    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
-      setIsDark(true);
-      document.documentElement.classList.add('dark');
-    } else {
-      setIsDark(false);
-      document.documentElement.classList.remove('dark');
-    }
   }, []);
 
   /* ─ Scroll listener for background change ─ */
@@ -128,8 +103,7 @@ export default function Header() {
     const navRect = barEl.getBoundingClientRect();
     const itemRect = activeEl.getBoundingClientRect();
 
-    // Position the underline centered beneath the text
-    const textPaddingX = 16; // px-4 = 16px padding each side
+    const textPaddingX = 16;
     gsap.to(indEl, {
       x: itemRect.left - navRect.left + textPaddingX,
       width: itemRect.width - textPaddingX * 2,
@@ -141,13 +115,11 @@ export default function Header() {
 
   useEffect(() => {
     if (mounted) {
-      // small delay to let DOM settle
       const t = setTimeout(moveIndicator, 80);
       return () => clearTimeout(t);
     }
   }, [mounted, activeSection, moveIndicator]);
 
-  // Also re-measure on resize
   useEffect(() => {
     if (!mounted) return;
     window.addEventListener('resize', moveIndicator);
@@ -179,7 +151,6 @@ export default function Header() {
       document.body.style.overflow = 'hidden';
       gsap.set(menu, { display: 'flex' });
       gsap.fromTo(menu, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: 'power2.out' });
-      // stagger links
       const links = menu.querySelectorAll('.mobile-nav-link');
       gsap.fromTo(
         links,
@@ -194,19 +165,6 @@ export default function Header() {
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen, mounted, moveIndicator]);
 
-  /* ─ Theme toggle ─ */
-  const toggleTheme = () => {
-    const next = !isDark;
-    setIsDark(next);
-    if (next) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  };
-
   /* ─ Smooth scroll helper ─ */
   const scrollTo = (sectionId: string) => {
     const el = document.getElementById(sectionId);
@@ -218,9 +176,9 @@ export default function Header() {
   if (!mounted) {
     return (
       <div className="fixed top-0 left-0 right-0 z-[200] flex justify-center pointer-events-none">
-        <div className="mt-4 mx-4 w-full max-w-3xl rounded-2xl border border-gray-200/50 dark:border-zinc-700/50 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-2xl px-5 py-2.5">
+        <div className="mt-4 mx-4 w-full max-w-3xl rounded-2xl border border-white/10 bg-black/60 backdrop-blur-2xl px-5 py-2.5">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold tracking-tight text-black dark:text-white">A.</span>
+            <span className="text-sm font-mono-lab tracking-widest text-white">ADI_LABS</span>
             <nav className="hidden md:flex items-center gap-1" />
             <div className="w-8 h-8" />
           </div>
@@ -235,15 +193,15 @@ export default function Header() {
       <div
         ref={headerRef}
         className="fixed top-0 left-0 right-0 z-[200] flex justify-center"
-        style={{ opacity: 0 }} /* initial hidden, GSAP reveals */
+        style={{ opacity: 0 }}
       >
         <div
           className={`
             mt-4 mx-4 w-full max-w-3xl rounded-2xl
             border transition-all duration-500
             ${isScrolled
-              ? 'border-gray-200/70 dark:border-zinc-700/60 bg-white/75 dark:bg-zinc-900/75 shadow-lg shadow-black/[0.04] dark:shadow-black/30'
-              : 'border-gray-200/40 dark:border-zinc-700/30 bg-white/50 dark:bg-zinc-900/40 shadow-none'
+              ? 'border-white/15 bg-black/75 shadow-lg shadow-black/40'
+              : 'border-white/8 bg-black/40 shadow-none'
             }
             backdrop-blur-2xl px-5 py-2.5
           `}
@@ -254,25 +212,19 @@ export default function Header() {
             <button
               onClick={() => scrollTo('home')}
               className="relative group flex items-center gap-1.5 select-none"
+              data-cursor-hover
             >
-              <span className="text-xl font-medium tracking-tight text-black dark:text-white transition-colors" style={{ fontFamily: 'var(--font-moralana)' }}>
-                Adhi
-              </span>
-              <span className="text-base font-bold tracking-tight bg-gradient-to-r from-violet-500 to-indigo-500 bg-clip-text text-transparent">
-                .
+              <span className="font-mono-lab text-sm tracking-[0.15em] text-white">
+                ADI<span className="text-accent">_</span>LABS
               </span>
             </button>
 
             {/* ── Desktop Nav links ── */}
             <nav ref={navBarRef} className="hidden md:flex items-center gap-0.5 relative">
-              {/* Sliding gradient underline indicator */}
               <div
                 ref={indicatorRef}
-                className="absolute bottom-0 left-0 h-[2px] rounded-full pointer-events-none bg-black dark:bg-white"
-                style={{
-                  width: 0,
-                  opacity: 0,
-                }}
+                className="absolute bottom-0 left-0 h-[2px] rounded-full pointer-events-none bg-(--lab-accent) shadow-[0_0_8px_var(--lab-accent)]"
+                style={{ width: 0, opacity: 0 }}
               />
 
               {navItems.map((item, idx) => (
@@ -284,12 +236,13 @@ export default function Header() {
                     e.preventDefault();
                     scrollTo(item.sectionId);
                   }}
+                  data-cursor-hover
                   className={`
-                    relative z-10 px-4 py-2 text-[13px] font-medium tracking-wide
+                    relative z-10 px-4 py-2 text-[13px] font-mono-lab tracking-wide
                     transition-all duration-300 select-none
                     ${activeSection === item.sectionId
-                      ? 'text-black dark:text-white'
-                      : 'text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                      ? 'text-white'
+                      : 'text-zinc-500 hover:text-zinc-300'
                     }
                   `}
                 >
@@ -300,25 +253,16 @@ export default function Header() {
 
             {/* ── Right controls ── */}
             <div className="flex items-center gap-2">
-              {/* Theme toggle */}
-              <button
-                onClick={toggleTheme}
-                className="relative w-8 h-8 rounded-xl flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-black/[0.06] dark:hover:bg-white/[0.08] transition-colors duration-200"
-                aria-label="Toggle theme"
-              >
-                <div
-                  className="transition-transform duration-300"
-                  style={{ transform: isDark ? 'rotate(180deg)' : 'rotate(0deg)' }}
-                >
-                  {isDark ? <SunIcon /> : <MoonIcon />}
-                </div>
-              </button>
+              <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-mono-lab tracking-widest uppercase text-accent">
+                <span className="w-1.5 h-1.5 rounded-full bg-(--lab-accent)" style={{ animation: 'pulse 3s ease-in-out infinite' }} />
+                Online
+              </span>
 
-              {/* Mobile hamburger */}
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="md:hidden w-8 h-8 rounded-xl flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-black/[0.06] dark:hover:bg-white/[0.08] transition-colors duration-200"
+                className="md:hidden w-8 h-8 rounded-xl flex items-center justify-center text-zinc-300 hover:bg-white/[0.08] transition-colors duration-200"
                 aria-label="Toggle menu"
+                data-cursor-hover
               >
                 {mobileOpen ? <CloseIcon /> : <MenuIcon />}
               </button>
@@ -330,51 +274,36 @@ export default function Header() {
       {/* ── Mobile full-screen menu ── */}
       <div
         ref={mobileMenuRef}
-        className="fixed inset-0 z-[195] flex flex-col items-center justify-center bg-white/80 dark:bg-black/80 backdrop-blur-2xl"
+        className="fixed inset-0 z-[195] flex flex-col items-center justify-center bg-black/90 backdrop-blur-2xl"
         style={{ display: 'none', opacity: 0 }}
       >
-        {/* Close button top-right */}
         <button
           onClick={() => setMobileOpen(false)}
-          className="absolute top-6 right-6 w-10 h-10 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-black/[0.06] dark:hover:bg-white/[0.08] transition-colors"
+          className="absolute top-6 right-6 w-10 h-10 rounded-full flex items-center justify-center text-zinc-300 hover:bg-white/[0.08] transition-colors"
           aria-label="Close menu"
+          data-cursor-hover
         >
           <CloseIcon />
         </button>
 
-        {/* Nav links — centered, large */}
         <nav className="flex flex-col items-center gap-2">
           {navItems.map((item) => (
             <button
               key={item.name}
               onClick={() => scrollTo(item.sectionId)}
+              data-cursor-hover
               className={`
-                mobile-nav-link px-6 py-3 rounded-2xl text-2xl font-semibold tracking-tight transition-all duration-200
-                ${activeSection === item.sectionId
-                  ? 'text-black dark:text-white'
-                  : 'text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white'
-                }
+                mobile-nav-link px-6 py-3 rounded-2xl text-2xl font-display tracking-tight transition-all duration-200
+                ${activeSection === item.sectionId ? 'text-white' : 'text-zinc-500 hover:text-white'}
               `}
             >
               {item.name}
-              {/* underline for active */}
               {activeSection === item.sectionId && (
-                <span className="block mx-auto mt-1 w-6 h-[2px] rounded-full bg-black dark:bg-white" />
+                <span className="block mx-auto mt-1 w-6 h-[2px] rounded-full bg-(--lab-accent)" />
               )}
             </button>
           ))}
         </nav>
-
-        {/* Theme toggle at bottom */}
-        <div className="absolute bottom-10 flex items-center gap-3">
-          <button
-            onClick={toggleTheme}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-gray-500 dark:text-gray-400 bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.08] dark:hover:bg-white/[0.1] transition-colors duration-200"
-          >
-            {isDark ? <SunIcon /> : <MoonIcon />}
-            {isDark ? 'Light Mode' : 'Dark Mode'}
-          </button>
-        </div>
       </div>
     </>
   );

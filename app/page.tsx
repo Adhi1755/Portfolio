@@ -5,10 +5,13 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import gsap from 'gsap';
 import WelcomeScreen from './components/WelcomeScreen';
 import MainPage from './components/Home';
-import AboutMeContainer from './components/About';
+import StatsDashboard from './components/StatsDashboard';
+import Journey from './components/Journey';
 import Projects from './components/Project';
+import TechnologyUniverse from './components/TechnologyUniverse';
+import NasaFeature from './components/NasaFeature';
+import NowBuilding from './components/NowBuilding';
 import ContactComponent from './components/Connect';
-import Certifications from './components/Certifications';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -52,9 +55,12 @@ export default function Home() {
         }}
       >
         <MainPage />
-        <AboutMeContainer />
+        <StatsDashboard />
+        <Journey />
         <Projects />
-        <Certifications />
+        <TechnologyUniverse />
+        <NasaFeature />
+        <NowBuilding />
         <ContactComponent />
       </div>
     </>

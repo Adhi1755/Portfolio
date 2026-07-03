@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useMediaQuery } from '@react-hook/media-query';
 import { MoveUpRight } from 'lucide-react';
 import Image from 'next/image';
 
@@ -118,110 +117,208 @@ const images: ImageData[] = [
   },
 ];
 
-function FloatingPreview({ image, isDesktop }: { image: ImageData | null; isDesktop: boolean }) {
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-  const requestRef = useRef<number | null>(null);
-  const prevCursorPosition = useRef({ x: 0, y: 0 });
-  const hasPositionRef = useRef(false);
+interface Experiment {
+  id: string;
+  expId: string;
+  title: string;
+  image: string;
+  status: 'ACTIVE' | 'DEPLOYED' | 'AWARDED';
+  objective: string;
+  method: string;
+  impact: string;
+  tech: string[];
+  link: string;
+}
 
-  useEffect(() => {
-    if (!isDesktop || !image) return;
+const experiments: Experiment[] = [
+  {
+    id: 'embedmindai',
+    expId: 'EXP-001',
+    title: 'EmbedMindAI',
+    image: '/images/EmbedMindAI.png',
+    status: 'ACTIVE',
+    objective: 'Static PDFs are hard to query — answers are buried, not searchable.',
+    method: 'Full RAG pipeline — SentenceTransformers embeddings, ChromaDB vector store, FastAPI backend — with multi-document ingestion and chunk-level retrieval.',
+    impact: 'Context-grounded, source-cited answers across multiple PDFs in seconds.',
+    tech: ['SentenceTransformers', 'ChromaDB', 'FastAPI', 'Python'],
+    link: 'https://github.com/Adhi1755/EmbedMindAI',
+  },
+  {
+    id: 'orrery',
+    expId: 'EXP-002',
+    title: 'Orrery Web App',
+    image: '/images/Orrery-web-app.png',
+    status: 'AWARDED',
+    objective: 'Solar system dynamics are abstract without a way to explore them interactively.',
+    method: 'Real-time 3D planetary orbits from orbital mechanics data with Three.js, with clickable bodies surfacing mission history and ephemeris data.',
+    impact: 'NASA Space Apps Challenge 2024 submission — won the Art & Technology Award.',
+    tech: ['Three.js', 'React', 'Orbital Mechanics'],
+    link: 'https://github.com/Adhi1755/Orrery-web-app',
+  },
+  {
+    id: 'skillspark',
+    expId: 'EXP-003',
+    title: 'SkillSpark',
+    image: '/images/SkillSpark.png',
+    status: 'DEPLOYED',
+    objective: "Generic quizzes and flashcards don't adapt to how a learner is actually performing.",
+    method: 'Adaptive quizzes that adjust difficulty live, spaced-repetition flashcards, and an AI coaching layer that personalises interview-prep roadmaps.',
+    impact: 'Shipped end-to-end at Hackverse 2025 in under 24 hours.',
+    tech: ['React Native', 'RAG', 'Gemini', 'Node.js'],
+    link: 'https://github.com/Adhi1755/SkillSpark',
+  },
+];
 
-    const updateCursorPosition = (e: MouseEvent) => {
-      if (requestRef.current) return;
-      requestRef.current = requestAnimationFrame(() => {
-        const { clientX, clientY } = e;
-        if (!hasPositionRef.current) {
-          prevCursorPosition.current = { x: clientX, y: clientY };
-          hasPositionRef.current = true;
-          setCursorPosition({ x: clientX, y: clientY });
-          requestRef.current = null;
-          return;
-        }
+const FEATURED_IDS = new Set([1, 2, 9]);
 
-        const dx = clientX - prevCursorPosition.current.x;
-        const dy = clientY - prevCursorPosition.current.y;
-        const easeAmount = 0.2;
-        const newX = prevCursorPosition.current.x + dx * easeAmount;
-        const newY = prevCursorPosition.current.y + dy * easeAmount;
+const STATUS_COLOR: Record<Experiment['status'], string> = {
+  ACTIVE: 'text-accent',
+  DEPLOYED: 'text-(--lab-secondary)',
+  AWARDED: 'text-accent',
+};
 
-        setCursorPosition({ x: newX, y: newY });
-        prevCursorPosition.current = { x: newX, y: newY };
-        requestRef.current = null;
-      });
-    };
+function ExperimentCard({ project, index }: { project: Experiment; index: number }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const imgWrapRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const spotRef = useRef<HTMLDivElement>(null);
 
-    window.addEventListener('mousemove', updateCursorPosition);
-    return () => {
-      window.removeEventListener('mousemove', updateCursorPosition);
-      if (requestRef.current) cancelAnimationFrame(requestRef.current);
-      requestRef.current = null;
-      hasPositionRef.current = false;
-    };
-  }, [isDesktop, image]);
+  useGSAP(() => {
+    if (!imgRef.current || !cardRef.current) return;
+    if (window.matchMedia('(pointer: coarse)').matches) return;
 
-  if (!isDesktop || !image) return null;
+    gsap.fromTo(
+      imgRef.current,
+      { scale: 1 },
+      {
+        scale: 1.1,
+        ease: 'none',
+        scrollTrigger: { trigger: cardRef.current, start: 'top bottom', end: 'bottom top', scrub: true },
+      }
+    );
+  }, []);
 
-  // Clamp position to keep preview within viewport
-  const previewW = 420;
-  const previewH = 240;
-  const halfW = previewW / 2;
-  const halfH = previewH / 2;
-  const clampedX = Math.max(halfW + 8, Math.min(cursorPosition.x, (typeof window !== 'undefined' ? window.innerWidth : 1920) - halfW - 8));
-  const clampedY = Math.max(halfH + 8, Math.min(cursorPosition.y, (typeof window !== 'undefined' ? window.innerHeight : 1080) - halfH - 8));
+  const handleTiltMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (window.matchMedia('(pointer: coarse)').matches || !imgWrapRef.current) return;
+    const rect = imgWrapRef.current.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width - 0.5;
+    const py = (e.clientY - rect.top) / rect.height - 0.5;
+    gsap.to(imgWrapRef.current, { rotateY: px * 8, rotateX: -py * 8, transformPerspective: 800, duration: 0.4, ease: 'power2.out' });
+    if (spotRef.current) {
+      spotRef.current.style.background = `radial-gradient(280px circle at ${(px + 0.5) * 100}% ${(py + 0.5) * 100}%, rgba(164,255,74,0.18), transparent 70%)`;
+    }
+  };
+
+  const handleTiltLeave = () => {
+    if (!imgWrapRef.current) return;
+    gsap.to(imgWrapRef.current, { rotateY: 0, rotateX: 0, duration: 0.6, ease: 'power3.out' });
+    if (spotRef.current) spotRef.current.style.background = 'transparent';
+  };
+
+  const reversed = index % 2 === 1;
 
   return (
+    <div ref={cardRef} className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14 items-center py-10">
+      <div
+        ref={imgWrapRef}
+        onMouseMove={handleTiltMove}
+        onMouseLeave={handleTiltLeave}
+        style={{ willChange: 'transform' }}
+        className={`relative rounded-3xl overflow-hidden glass aspect-4/3 ${reversed ? 'lg:order-2' : ''}`}
+      >
+        <Image
+          ref={imgRef}
+          src={project.image}
+          alt={project.title}
+          fill
+          sizes="(max-width: 1024px) 100vw, 50vw"
+          className="object-cover"
+        />
+        <div ref={spotRef} className="absolute inset-0 pointer-events-none transition-[background] duration-150" />
+        <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-sm">
+          <span className="font-mono-lab text-[10px] tracking-widest text-zinc-400">{project.expId}</span>
+        </div>
+      </div>
+      <div className={`flex flex-col gap-5 ${reversed ? 'lg:order-1' : ''}`}>
+        <div className="flex items-center gap-3">
+          <span className={`flex items-center gap-1.5 text-[10px] font-mono-lab tracking-widest uppercase ${STATUS_COLOR[project.status]}`}>
+            <span className="w-1.5 h-1.5 rounded-full bg-current" style={{ animation: 'pulse 3s ease-in-out infinite' }} />
+            Status: {project.status}
+          </span>
+        </div>
+        <h3 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-white">{project.title}</h3>
+        <div className="flex flex-col gap-3 text-sm font-light leading-relaxed text-zinc-400">
+          <p><span className="font-mono-lab text-xs text-zinc-300">OBJECTIVE — </span>{project.objective}</p>
+          <p><span className="font-mono-lab text-xs text-zinc-300">METHOD — </span>{project.method}</p>
+          <p><span className="font-mono-lab text-xs text-zinc-300">IMPACT — </span>{project.impact}</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {project.tech.map((t) => (
+            <span key={t} className="px-3 py-1.5 rounded-full border border-white/10 font-mono-lab text-xs text-zinc-400">
+              {t}
+            </span>
+          ))}
+        </div>
+        <a
+          href={project.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-cursor-hover
+          className="group inline-flex items-center gap-2 font-mono-lab text-sm text-white w-fit hover:text-accent transition-colors"
+        >
+          view_repository()
+          <MoveUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function ArchiveRow({ image, active, onHover, onClick }: { image: ImageData; active: boolean; onHover: () => void; onClick: () => void }) {
+  return (
     <div
-      className="fixed pointer-events-none z-50 w-105 h-60"
-      style={{
-        left: `${clampedX}px`,
-        top: `${clampedY}px`,
-        transform: 'translate(-50%, -50%)',
-      }}
+      className={`group relative flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6 py-6 border-b border-white/10 cursor-pointer transition-all duration-300 md:hover:px-2 ${active ? 'bg-white/[0.02] rounded-xl' : ''}`}
+      onMouseEnter={onHover}
+      onClick={onClick}
+      data-cursor-hover
     >
-      <Image
-        src={image.src}
-        alt={image.alt}
-        width={420}
-        height={240}
-        className="w-full h-full rounded-3xl object-cover"
-      />
-      <div className="absolute inset-x-0 bottom-0 h-20 bg-linear-to-t from-black/65 via-black/30 to-transparent rounded-b-3xl" />
-      <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-sm font-medium text-white tracking-wide text-center px-4">
-        {image.alt}
-      </p>
+      <div className="flex-1 min-w-0">
+        <p className={`text-xl sm:text-2xl lg:text-3xl font-display font-medium tracking-tight mb-1 sm:mb-2 transition-colors duration-200 ${active ? 'text-white' : 'text-zinc-400'}`}>
+          {image.alt}
+        </p>
+        <p className="text-xs sm:text-sm lg:text-base font-light text-zinc-500 leading-relaxed max-w-2xl line-clamp-3 sm:line-clamp-none">
+          {image.description}
+        </p>
+      </div>
+
+      <button
+        className={`self-start md:self-center flex-shrink-0 p-2.5 sm:p-3 rounded-full border transition-all duration-300 ${
+          active ? 'bg-(--lab-accent) border-(--lab-accent) text-black' : 'border-white/15 text-zinc-500 group-hover:border-(--lab-accent) group-hover:text-accent'
+        }`}
+      >
+        <MoveUpRight className="w-4 h-4 sm:w-5 sm:h-5" />
+      </button>
+
+      <div className={`absolute bottom-0 left-0 h-[1.5px] bg-(--lab-accent) transition-all duration-300 ease-out ${active ? 'w-full opacity-100' : 'w-0 opacity-0'}`} />
     </div>
   );
 }
 
 export default function Projects() {
-  const isDesktop = useMediaQuery('(min-width: 768px)');
   const [activeImage, setActiveImage] = useState<ImageData | null>(null);
   const [showAll, setShowAll] = useState(false);
   const INITIAL_COUNT = 4;
-  const visibleProjects = showAll ? images : images.slice(0, INITIAL_COUNT);
+  const archiveImages = images.filter((img) => !FEATURED_IDS.has(img.id));
+  const visibleProjects = showAll ? archiveImages : archiveImages.slice(0, INITIAL_COUNT);
   const containerRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const projectItemsRef = useRef<Array<HTMLDivElement | null>>([]);
-
-  const handleImageHover = (image: ImageData) => {
-    setActiveImage(image);
-  };
-
-  const handleMouseLeave = () => {
-    setActiveImage(null);
-  };
-
-  const handleProjectClick = (image: ImageData) => {
-    if (image.link) window.open(image.link, '_blank', 'noopener,noreferrer');
-  };
 
   const [isClient, setIsClient] = useState(false);
   useEffect(() => setIsClient(true), []);
 
   useGSAP(() => {
     if (!isClient || !containerRef.current) return;
-
     const isTouch = window.matchMedia('(pointer: coarse)').matches;
 
     const ctx = gsap.context(() => {
@@ -230,7 +327,6 @@ export default function Projects() {
       if (!headerEl || projectItems.length === 0) return;
 
       if (isTouch) {
-        // Ensure items are visible on touch devices — no scroll animations.
         gsap.set([headerEl, ...projectItems], { opacity: 1, y: 0, scale: 1, clearProps: 'all' });
         return;
       }
@@ -238,19 +334,7 @@ export default function Projects() {
       gsap.fromTo(
         headerEl,
         { opacity: 0, y: 24 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.45,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: 'top 92%',
-            toggleActions: 'play none none none',
-            once: true,
-            invalidateOnRefresh: true,
-          },
-        }
+        { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out', scrollTrigger: { trigger: containerRef.current, start: 'top 92%', once: true, invalidateOnRefresh: true } }
       );
 
       gsap.set(projectItems, { opacity: 0, y: 20, scale: 0.99 });
@@ -259,15 +343,7 @@ export default function Projects() {
         start: 'top 95%',
         once: true,
         onEnter: (batch) => {
-          gsap.to(batch, {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.35,
-            stagger: 0.06,
-            ease: 'power2.out',
-            overwrite: 'auto',
-          });
+          gsap.to(batch, { opacity: 1, y: 0, scale: 1, duration: 0.35, stagger: 0.06, ease: 'power2.out', overwrite: 'auto' });
         },
       });
 
@@ -280,129 +356,78 @@ export default function Projects() {
   if (!isClient) return null;
 
   return (
-    <div
-      ref={containerRef}
-      id="projects"
-      className="relative bg-white dark:bg-black transition-colors duration-300 overflow-hidden"
-    >
-      {/* Background orbs — neutral B&W */}
+    <div ref={containerRef} id="projects" className="relative bg-(--lab-bg) overflow-hidden">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 -right-32 w-[400px] h-[400px] rounded-full bg-gray-100 dark:bg-zinc-900/30 blur-[100px] opacity-50" />
-        <div className="absolute bottom-0 -left-24 w-[350px] h-[350px] rounded-full bg-gray-200 dark:bg-zinc-800/20 blur-[90px] opacity-40" />
-        <div
-          className="absolute inset-0 opacity-[0.025] dark:opacity-[0.04]"
-          style={{ backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '38px 38px' }}
-        />
+        <div className="absolute inset-0 lab-grid opacity-20" />
+        <div className="absolute top-1/4 -right-32 w-[400px] h-[400px] rounded-full bg-(--lab-secondary)/10 blur-[120px]" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-10 lg:px-16 py-20 sm:py-24 lg:py-32">
 
-        {/* Header */}
         <div ref={headerRef} className="mb-12 sm:mb-16 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
           <div className="flex flex-col gap-4">
-            <p className="text-xs font-light tracking-[0.25em] uppercase text-gray-400 dark:text-gray-500">
-              03 — Projects
+            <p className="text-xs font-mono-lab tracking-[0.25em] uppercase text-zinc-500">
+              experiments — active research
             </p>
-            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-semibold tracking-tighter text-black dark:text-white leading-none">
-              Projects
+            <h2 className="font-display text-5xl sm:text-6xl lg:text-7xl font-semibold tracking-tight text-white leading-none">
+              Research Terminal
             </h2>
-            <p className="text-sm sm:text-base lg:text-lg font-light text-gray-600 dark:text-gray-400 max-w-xl leading-relaxed">
-              Combining AI, web development, and problem-solving to build practical, real-world solutions.
+            <p className="text-sm sm:text-base font-light text-zinc-400 max-w-xl leading-relaxed">
+              Each project below is treated as a live experiment — an objective, a method, and a measured impact.
             </p>
           </div>
           <button
             onClick={() => window.open('https://github.com/Adhi1755', '_blank')}
-            className="self-start lg:self-auto flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full border border-gray-300 dark:border-zinc-600 text-gray-700 dark:text-gray-300 font-light text-sm tracking-wide hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-all duration-200"
+            data-cursor-hover
+            className="self-start lg:self-auto glass flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full font-mono-lab text-zinc-300 text-sm tracking-wide hover:text-accent transition-all duration-200"
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
             </svg>
-            View GitHub
+            view_github()
           </button>
         </div>
 
-        {/* Projects list */}
-        <div
-          className="relative"
-          onMouseLeave={handleMouseLeave}
-        >
+        {/* Featured experiments */}
+        <div className="flex flex-col divide-y divide-white/10 mb-16 sm:mb-20">
+          {experiments.map((project, index) => (
+            <ExperimentCard key={project.id} project={project} index={index} />
+          ))}
+        </div>
+
+        <p className="text-xs font-mono-lab tracking-[0.25em] uppercase text-zinc-500 mb-6">
+          archive — additional logs
+        </p>
+
+        <div className="relative">
           {visibleProjects.map((image, index) => (
-            <div
-              key={image.id}
-              ref={(el) => { projectItemsRef.current[index] = el; }}
-              className={`group relative flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6 py-6 border-b border-gray-200 dark:border-zinc-800 cursor-pointer transition-all duration-300 md:hover:px-2 ${activeImage?.id === image.id ? 'bg-black/[0.02] dark:bg-white/[0.02] rounded-xl' : ''
-                }`}
-              onMouseEnter={() => handleImageHover(image)}
-              onClick={() => handleProjectClick(image)}
-            >
-              {/* Mobile project image — always visible on mobile */}
-              {!isDesktop && (
-                <div className="w-full overflow-hidden rounded-2xl">
-                  <Image
-                    src={image.src}
-                    className="w-full h-44 sm:h-52 object-cover rounded-2xl"
-                    alt={image.alt}
-                    width={600}
-                    height={400}
-                  />
-                </div>
-              )}
-
-              <div className="flex-1 min-w-0">
-                <h3
-                  className={`text-xl sm:text-2xl lg:text-4xl font-medium tracking-tight mb-1 sm:mb-2 transition-colors duration-200 ${activeImage?.id === image.id ? 'text-black dark:text-white' : 'text-gray-700 dark:text-gray-300'
-                    }`}
-                >
-                  {image.alt}
-                </h3>
-                <p className="text-xs sm:text-sm lg:text-base font-light text-gray-500 dark:text-gray-400 leading-relaxed max-w-2xl line-clamp-3 sm:line-clamp-none">
-                  {image.description}
-                </p>
-              </div>
-
-              <button
-                className={`self-start md:self-center flex-shrink-0 p-2.5 sm:p-3 rounded-full border transition-all duration-300 ${activeImage?.id === image.id
-                  ? 'bg-black dark:bg-white border-black dark:border-white text-white dark:text-black'
-                  : 'border-gray-200 dark:border-zinc-700 text-gray-400 dark:text-gray-500 group-hover:border-black dark:group-hover:border-white group-hover:text-black dark:group-hover:text-white'
-                  }`}
-              >
-                <MoveUpRight className="w-4 h-4 sm:w-5 sm:h-5" />
-              </button>
-
-              {/* Hover underline indicator */}
-              <div
-                className={`absolute bottom-0 left-0 h-[1.5px] bg-black dark:bg-white transition-all duration-300 ease-out ${activeImage?.id === image.id ? 'w-full opacity-100' : 'w-0 opacity-0'
-                  }`}
+            <div key={image.id} ref={(el) => { projectItemsRef.current[index] = el; }}>
+              <ArchiveRow
+                image={image}
+                active={activeImage?.id === image.id}
+                onHover={() => setActiveImage(image)}
+                onClick={() => image.link && window.open(image.link, '_blank', 'noopener,noreferrer')}
               />
             </div>
           ))}
 
-          {/* Show More / Show Less button */}
-          {images.length > INITIAL_COUNT && (
+          {archiveImages.length > INITIAL_COUNT && (
             <div className="flex justify-center mt-10">
               <button
                 onClick={() => {
                   setShowAll((prev) => !prev);
                   setTimeout(() => ScrollTrigger.refresh(), 100);
                 }}
-                className="flex items-center gap-2 px-7 py-3 rounded-full border border-gray-300 dark:border-zinc-600 text-gray-700 dark:text-gray-300 font-light text-sm tracking-wide hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-all duration-200"
+                data-cursor-hover
+                className="glass flex items-center gap-2 px-7 py-3 rounded-full font-mono-lab text-zinc-300 text-sm tracking-wide hover:text-accent transition-all duration-200"
               >
-                {showAll ? 'Show Less' : 'Show More'}
-                <svg
-                  className={`w-4 h-4 transition-transform duration-300 ${showAll ? 'rotate-180' : ''}`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
+                {showAll ? 'show_less()' : 'show_more()'}
+                <svg className={`w-4 h-4 transition-transform duration-300 ${showAll ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
             </div>
           )}
-
-          {/* Floating image on hover (desktop) */}
-          <FloatingPreview image={activeImage} isDesktop={isDesktop} />
         </div>
       </div>
     </div>
