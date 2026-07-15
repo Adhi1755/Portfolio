@@ -15,6 +15,9 @@ export default function SmoothScroll() {
         const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
         if (isTouchDevice) return;
 
+        // Respect reduced motion — keep native (instant) scrolling
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
         // Initialize Lenis (desktop only)
         const lenis = new Lenis({
             duration: 1.2,

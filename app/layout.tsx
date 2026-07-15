@@ -23,11 +23,14 @@ const moralana = localFont({
 
 
 export const metadata: Metadata = {
-  title: "Adithya's Portfolio",
-  description: "Adithya's Portfolio using Next.js",
+  title: "Adithya Nagamuneendran — Portfolio",
+  description:
+    "Final-year Computer Science (Data Science) student at Dayananda Sagar University, Bengaluru — building across full stack development, AI, and data science.",
 };
 
 import SmoothScroll from "./components/SmoothScroll";
+import CustomCursor from "./components/CustomCursor";
+import ScrollProgress from "./components/ScrollProgress";
 
 export default function RootLayout({
   children,
@@ -41,6 +44,8 @@ export default function RootLayout({
         className={`${outfit.variable} ${moralana.variable} antialiased`}
       >
         <SmoothScroll />
+        <CustomCursor />
+        <ScrollProgress />
         <Header />
         {children}
         <Analytics />
