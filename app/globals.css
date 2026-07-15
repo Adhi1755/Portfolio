@@ -63,6 +63,21 @@
   50% { opacity: 0.5; transform: scale(1.15); }
 }
 
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  animation: marquee 40s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
 body {
   font-family: var(--font-outfit), sans-serif;
   position: relative;
@@ -144,5 +159,70 @@ body {
 
   .perspective-1000 {
     perspective: 1000px;
+  }
+}
+
+/* ── Custom cursor: hide the native cursor only while the custom one is active
+   (never added on touch devices or under prefers-reduced-motion) ── */
+.has-custom-cursor,
+.has-custom-cursor * {
+  cursor: none !important;
+}
+
+/* ── Film grain: extremely subtle full-page noise for a premium texture ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 350;
+  pointer-events: none;
+  opacity: 0.022;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.dark body::after {
+  opacity: 0.04;
+}
+
+/* ── Shimmer sweep across primary buttons on hover ── */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shine::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -80%;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+  transform: skewX(-18deg);
+  pointer-events: none;
+}
+
+/* dark theme primary buttons are white, so sweep a dark tint instead */
+.dark .btn-shine::before {
+  background: linear-gradient(105deg, transparent, rgba(0, 0, 0, 0.12), transparent);
+}
+
+.btn-shine:hover::before {
+  left: 130%;
+  transition: left 0.55s ease;
+}
+
+/* ── Respect reduced motion for all CSS-driven animation ── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

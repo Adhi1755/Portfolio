@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Magnet from './Magnet/Magnet';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -70,6 +71,21 @@ const ContactComponent = () => {
           invalidateOnRefresh: true,
         },
       });
+
+      // Heading lines slide up through their masks
+      gsap.from('.contact-line', {
+        yPercent: 110,
+        duration: 0.9,
+        ease: 'power4.out',
+        stagger: 0.12,
+        clearProps: 'all',
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 88%',
+          once: true,
+          invalidateOnRefresh: true,
+        },
+      });
     }, sectionRef);
 
     return () => ctx.revert();
@@ -119,37 +135,101 @@ const ContactComponent = () => {
     <div
       id="contact"
       ref={sectionRef}
-      className="relative bg-white dark:bg-black transition-colors duration-300 overflow-hidden"
+      className="relative bg-[#131110] overflow-hidden"
     >
-      {/* Background grid */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-[0.025] dark:opacity-[0.04]"
-          style={{ backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '38px 38px' }}
-        />
+      {/* ── Marquee opener ── */}
+      <div className="border-b border-white/[0.08] overflow-hidden py-3 select-none">
+        <div className="marquee-track flex w-max whitespace-nowrap">
+          {[0, 1].map((copy) => (
+            <span key={copy} aria-hidden={copy === 1} className="flex items-center">
+              {['Open to Opportunities', 'Software Engineering', 'AI & Machine Learning', 'Data Science', 'Full Stack Development', 'Bengaluru, India'].map((item, i) => (
+                <span
+                  key={i}
+                  className="flex items-center text-[10px] font-light uppercase tracking-[0.3em] text-gray-500"
+                >
+                  <span className="px-6">{item}</span>
+                  <span className="text-[8px] opacity-60">✦</span>
+                </span>
+              ))}
+            </span>
+          ))}
+        </div>
       </div>
 
-      {/* subtle top divider */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-20 bg-gradient-to-b from-transparent via-gray-200 dark:via-zinc-800 to-transparent" />
-
-      <div className="relative max-w-6xl mx-auto px-6 sm:px-10 lg:px-16 pt-28 pb-16">
+      <div className="relative max-w-[90rem] mx-auto px-6 sm:px-10 lg:px-16 pt-20 sm:pt-24 pb-16">
 
         {/* ── Heading ── */}
-        <div ref={headingRef} className="mb-20">
-          <p className="text-xs font-light tracking-[0.25em] uppercase text-gray-400 dark:text-gray-500 mb-4">
-            05 — Contact
-          </p>
-          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-semibold tracking-tighter text-black dark:text-white leading-[1.0]">
-            Let&apos;s work<br />
-            <span className="text-gray-300 dark:text-zinc-700">together.</span>
+        <div ref={headingRef} className="mb-16 sm:mb-20">
+          <div className="flex items-center justify-between gap-4 mb-6">
+            <p className="text-[10px] sm:text-[11px] font-light tracking-[0.3em] uppercase text-gray-500">
+            </p>
+            <p className="flex items-center gap-2.5 text-[10px] sm:text-[11px] font-light tracking-[0.3em] uppercase text-gray-500">
+              <span
+                className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"
+                style={{ animation: 'pulse 3s ease-in-out infinite' }}
+              />
+              Replies within 24 h
+            </p>
+          </div>
+          <h2 className="text-[clamp(2.8rem,9vw,8.5rem)] font-semibold uppercase tracking-tight text-[#F2EFE9] leading-[0.98]">
+            <span className="block overflow-hidden pb-[0.06em] -mb-[0.06em]">
+              <span className="contact-line inline-block will-change-transform">Got a project?</span>
+            </span>
+            <span className="block overflow-hidden pb-[0.06em] -mb-[0.06em]">
+              <span
+                className="contact-line inline-block will-change-transform"
+                style={{ WebkitTextStroke: '2px #F2EFE9', WebkitTextFillColor: 'transparent' }}
+              >
+                Let&apos;s talk.
+              </span>
+            </span>
           </h2>
         </div>
 
-        {/* ── Body: form + sidebar ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-16 lg:gap-24 items-start">
+        {/* ── Body: big links + form ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
 
-          {/* ── Form ── */}
+          {/* ── Left: the big links ── */}
           <div ref={leftRef}>
+            <a
+              href="mailto:adithya1755@gmail.com"
+              className="group block border-y border-white/10 py-6 sm:py-8 px-3 -mx-3 transition-colors duration-300 hover:bg-[#F2EFE9]"
+            >
+              <span className="block text-[10px] font-light uppercase tracking-[0.3em] text-gray-500 mb-3">
+                Email me
+              </span>
+              <span className="flex items-baseline justify-between gap-4 text-[clamp(1.3rem,2.6vw,2.5rem)] font-semibold tracking-tight text-[#F2EFE9] group-hover:text-black transition-colors duration-300 break-all">
+                adithya1755@gmail.com
+                <span className="shrink-0 text-xl transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1">↗</span>
+              </span>
+            </a>
+
+            {SOCIAL_LINKS.map((s) => (
+              <a
+                key={s.label}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center justify-between border-b border-white/10 py-5 px-3 -mx-3 transition-colors duration-300 hover:bg-[#F2EFE9]"
+              >
+                <span className="flex items-center gap-3 text-sm sm:text-base font-medium uppercase tracking-[0.15em] text-gray-400 group-hover:text-black transition-colors duration-300">
+                  <span className="opacity-50 group-hover:opacity-100 transition-opacity">{s.icon}</span>
+                  {s.label}
+                </span>
+                <span className="text-gray-600 group-hover:text-black transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">↗</span>
+              </a>
+            ))}
+
+            <p className="mt-8 text-[10px] font-light uppercase tracking-[0.3em] text-gray-500">
+              Based in Bengaluru
+            </p>
+          </div>
+
+          {/* ── Right: the form ── */}
+          <div ref={rightRef}>
+            <p className="mb-8 text-[10px] font-light uppercase tracking-[0.3em] text-gray-500">
+              Or drop a message
+            </p>
             {submitStatus === 'success' ? (
               <div className="py-16 flex flex-col gap-4">
                 <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-2">
@@ -157,11 +237,11 @@ const ContactComponent = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <p className="text-2xl font-semibold text-black dark:text-white tracking-tight">Message sent.</p>
-                <p className="text-sm font-light text-gray-500 dark:text-gray-400">{submitMessage}</p>
+                <p className="text-2xl font-semibold text-[#F2EFE9] tracking-tight">Message sent.</p>
+                <p className="text-sm font-light text-gray-400">{submitMessage}</p>
                 <button
                   onClick={() => setSubmitStatus(null)}
-                  className="mt-4 self-start text-sm font-light text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white transition-colors underline underline-offset-4"
+                  className="mt-4 self-start text-sm font-light text-gray-500 hover:text-[#F2EFE9] transition-colors underline underline-offset-4"
                 >
                   Send another
                 </button>
@@ -170,7 +250,7 @@ const ContactComponent = () => {
               <form onSubmit={handleSubmit} className="space-y-10">
                 {/* error banner */}
                 {submitStatus === 'error' && (
-                  <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 text-sm text-red-600 dark:text-red-400">
+                  <div className="flex items-center gap-3 px-4 py-3 rounded-sm bg-red-50 border border-red-200 text-sm text-red-600">
                     <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <circle cx="12" cy="12" r="10" strokeWidth={2} />
                       <path strokeLinecap="round" strokeWidth={2} d="M12 8v4m0 4h.01" />
@@ -209,10 +289,11 @@ const ContactComponent = () => {
                 />
 
                 <div className="flex items-center gap-4 pt-2">
+                  <Magnet padding={40} magnetStrength={4} disabled={isSubmitting}>
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-black dark:bg-white text-white dark:text-black text-sm font-normal tracking-wide hover:opacity-80 active:scale-95 transition-all duration-200 shadow-lg shadow-black/10 disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="btn-shine group inline-flex items-center gap-2.5 bg-[#F2EFE9] text-black px-9 py-4 rounded-sm text-xs font-semibold tracking-[0.18em] uppercase hover:opacity-80 active:scale-95 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? (
                       <>
@@ -231,7 +312,8 @@ const ContactComponent = () => {
                       </>
                     )}
                   </button>
-                  <p className="text-xs font-light text-gray-400 dark:text-zinc-600">
+                  </Magnet>
+                  <p className="text-xs font-light uppercase tracking-[0.15em] text-gray-500">
                     Replies within 24 h
                   </p>
                 </div>
@@ -239,63 +321,15 @@ const ContactComponent = () => {
             )}
           </div>
 
-          {/* ── Sidebar ── */}
-          <div ref={rightRef} className="flex flex-col gap-10 lg:pt-1">
-
-            {/* direct email */}
-            <div>
-              <p className="text-[11px] font-light tracking-[0.2em] uppercase text-gray-400 dark:text-gray-600 mb-3">Email</p>
-              <a
-                href="mailto:adithya1755@gmail.com"
-                className="text-sm font-light text-black dark:text-white hover:text-gray-500 dark:hover:text-gray-400 transition-colors break-all"
-              >
-                adithya1755@gmail.com
-              </a>
-            </div>
-
-            {/* location */}
-            <div>
-              <p className="text-[11px] font-light tracking-[0.2em] uppercase text-gray-400 dark:text-gray-600 mb-3">Based in</p>
-              <p className="text-sm font-light text-black dark:text-white">Bengaluru, India</p>
-            </div>
-
-            {/* divider */}
-            <div className="h-px bg-gray-100 dark:bg-zinc-900" />
-
-            {/* socials */}
-            <div>
-              <p className="text-[11px] font-light tracking-[0.2em] uppercase text-gray-400 dark:text-gray-600 mb-4">Elsewhere</p>
-              <div className="flex flex-col gap-2">
-                {SOCIAL_LINKS.map((s) => (
-                  <a
-                    key={s.label}
-                    href={s.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group inline-flex items-center gap-3 text-sm font-light text-gray-500 dark:text-gray-500 hover:text-black dark:hover:text-white transition-colors duration-200"
-                  >
-                    <span className="opacity-60 group-hover:opacity-100 transition-opacity">{s.icon}</span>
-                    {s.label}
-                    <svg
-                      className="w-3 h-3 opacity-0 group-hover:opacity-60 -translate-x-1 group-hover:translate-x-0 transition-all duration-200"
-                      fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17L17 7M7 7h10v10" />
-                    </svg>
-                  </a>
-                ))}
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
       {/* ── Footer ── */}
-      <div className="max-w-6xl mx-auto px-6 sm:px-10 lg:px-16 py-8 mt-8 border-t border-gray-100 dark:border-zinc-900 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <p className="text-xs font-light text-gray-400 dark:text-zinc-600 tracking-wide">
+      <div className="max-w-[90rem] mx-auto px-6 sm:px-10 lg:px-16 py-8 mt-8 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-3">
+        <p className="text-[10px] font-light uppercase tracking-[0.3em] text-gray-500">
           © 2026 Adithya Nagamuneendran
         </p>
-        <p className="text-xs font-light text-gray-400 dark:text-zinc-600 tracking-wide">
+        <p className="text-[10px] font-light uppercase tracking-[0.3em] text-gray-500">
           Designed &amp; built by Adithya
         </p>
       </div>
@@ -318,7 +352,7 @@ function Field({ id, label, type, value, disabled, onChange }: FieldProps) {
   const floated = focused || value.length > 0;
 
   const shared =
-    'w-full bg-transparent pt-5 pb-2.5 text-sm text-black dark:text-white outline-none border-b border-gray-200 dark:border-zinc-800 focus:border-black dark:focus:border-white transition-colors duration-200 disabled:opacity-40 resize-none';
+    'block w-full bg-transparent pt-5 pb-2.5 text-sm text-[#F2EFE9] outline-none border-b border-white/15 transition-colors duration-200 disabled:opacity-40 resize-none';
 
   return (
     <div className="relative">
@@ -326,8 +360,8 @@ function Field({ id, label, type, value, disabled, onChange }: FieldProps) {
         htmlFor={id}
         className={`absolute left-0 pointer-events-none transition-all duration-200 ${
           floated
-            ? 'top-0 text-[10px] font-medium tracking-widest uppercase text-gray-400 dark:text-zinc-600'
-            : 'top-5 text-sm font-light text-gray-400 dark:text-zinc-600'
+            ? 'top-0 text-[10px] font-medium tracking-widest uppercase text-gray-500'
+            : 'top-5 text-sm font-light text-gray-500'
         }`}
       >
         {label}
@@ -355,6 +389,13 @@ function Field({ id, label, type, value, disabled, onChange }: FieldProps) {
           className={shared}
         />
       )}
+      {/* animated focus underline — grows from the left over the static border */}
+      <span
+        aria-hidden="true"
+        className={`absolute bottom-0 left-0 h-[1.5px] w-full origin-left bg-[#F2EFE9] transition-transform duration-300 ease-out ${
+          focused ? 'scale-x-100' : 'scale-x-0'
+        }`}
+      />
     </div>
   );
 }

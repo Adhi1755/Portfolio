@@ -1,42 +1,63 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Typewriter from 'typewriter-effect';
-import Image from 'next/image';
+import Magnet from './Magnet/Magnet';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Description split into words so each can be revealed individually.
-// `hl` marks the words that get the high-contrast highlight treatment.
-const DESC_WORDS: { t: string; hl?: boolean }[] = [
-  { t: 'Pre-final' }, { t: 'year' },
-  { t: 'CS', hl: true }, { t: '(Data', hl: true }, { t: 'Science)', hl: true },
-  { t: 'student' }, { t: '—' }, { t: 'building' }, { t: 'intelligent' },
-  { t: 'systems' }, { t: 'with' },
-  { t: 'LLMs,', hl: true }, { t: 'PyTorch,', hl: true }, { t: 'and', hl: true }, { t: 'FastAPI', hl: true },
-  { t: 'and' }, { t: 'shipping' }, { t: 'full-stack' }, { t: 'web' }, { t: 'apps' },
-  { t: 'that' }, { t: 'actually' }, { t: 'work.' },
+const HERO_NAME = 'ADITHYA'.split('');
+
+// Role line cycles through these with a character-scramble transition.
+const ROLES = [
+  'Full Stack · AI · Data Science',
+  'Final-Year CS (DS) Student',
+  'Learning by Building',
 ];
 
-const HERO_NAME = 'Adithya'.split('');
+// Film-grain texture — inline SVG so it needs no CSS rebuild or network fetch.
+const GRAIN_URL =
+  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
+
+const MARQUEE_ITEMS = [
+  'Full Stack Development', 'AI & Machine Learning', 'Data Science', 'Next.js', 'Python', 'SQL', 'Bengaluru',
+];
+
+const DESC_WORDS =
+  'Final-year CS (Data Science) student who builds across the stack — modern web apps with Next.js and TypeScript, AI-powered products with Python and FastAPI — while strengthening DSA, SQL, and ML fundamentals for what comes next.'.split(' ');
 
 const MainPage: React.FC<{ play?: boolean }> = ({ play = true }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const scrollRef    = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const roleRef = useRef<HTMLSpanElement>(null);
+
+  // Live Bengaluru clock — placeholder until mounted to avoid a hydration mismatch.
+  const [ist, setIst] = useState('--:--:--');
+  useEffect(() => {
+    const tick = () =>
+      setIst(new Date().toLocaleTimeString('en-GB', { hour12: false, timeZone: 'Asia/Kolkata' }));
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
 
   // Hide everything immediately on mount so the hero is staged (and stays hidden
   // behind the welcome screen) until `play` triggers the entrance.
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      const items = ['.h-label', '.h-pill', '.h-avatar', '.h-role', '.h-cta', '.h-social']
-        .map((c) => containerRef.current?.querySelector<HTMLElement>(c))
-        .filter((x): x is HTMLElement => x !== null);
+    // Reduced motion: leave everything at its natural visible state.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-      gsap.set([...items, scrollRef.current], { opacity: 0, y: 28 });
-      gsap.set('.h-avatar', { y: 0, scale: 0.93 });
-      gsap.set('.h-name-letter', { yPercent: 115 });
+    const ctx = gsap.context(() => {
+      gsap.set('.h-meta', { opacity: 0, y: 14 });
+      gsap.set('.h-gridline', { scaleY: 0 });
+      gsap.set('.h-letter', { yPercent: 115 });
+      gsap.set('.h-role', { opacity: 0 });
+      gsap.set('.h-rule', { scaleX: 0 });
       gsap.set('.h-desc-word', { yPercent: 115, opacity: 0 });
+      gsap.set('.h-status', { opacity: 0, y: 16 });
+      gsap.set('.h-links', { opacity: 0, y: 20 });
+      gsap.set('.h-marquee', { opacity: 0 });
+      gsap.set(scrollRef.current, { opacity: 0 });
     }, containerRef);
 
     return () => ctx.revert();
@@ -45,179 +66,285 @@ const MainPage: React.FC<{ play?: boolean }> = ({ play = true }) => {
   // Play the entrance once the welcome screen hands off.
   useEffect(() => {
     if (!play) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const letterHandlers: { el: HTMLElement; fn: () => void }[] = [];
+    let parallaxCleanup: (() => void) | null = null;
 
     const ctx = gsap.context(() => {
-      const el = (cls: string) => containerRef.current?.querySelector<HTMLElement>(cls) ?? null;
-
-      const label  = el('.h-label');
-      const pill   = el('.h-pill');
-      const avatar = el('.h-avatar');
-      const role   = el('.h-role');
-      const cta    = el('.h-cta');
-      const social = el('.h-social');
-      const nameLetters = containerRef.current?.querySelectorAll<HTMLElement>('.h-name-letter') ?? [];
-      const descWords   = containerRef.current?.querySelectorAll<HTMLElement>('.h-desc-word') ?? [];
-
-      gsap.timeline({ delay: 0 })
-        .to(label,  { opacity: 1, y: 0, duration: 0.35, ease: 'power3.out' })
-        .to(pill,   { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }, '-=0.22')
+      gsap.timeline({ delay: 0.05 })
+        .to('.h-meta', { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' })
+        // editorial grid: hairlines draw down from the top
+        .to('.h-gridline', { scaleY: 1, duration: 1.1, ease: 'power3.inOut', stagger: 0.08 }, '-=0.3')
         // name: per-letter masked slide-up
-        .to(nameLetters, { yPercent: 0, duration: 0.55, ease: 'power4.out', stagger: 0.03 }, '-=0.18')
-        .to(avatar, { opacity: 1, scale: 1, duration: 0.55, ease: 'power3.out' }, '-=0.45')
-        .to(role,   { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }, '-=0.35')
+        .to('.h-letter', { yPercent: 0, duration: 0.8, ease: 'power4.out', stagger: 0.05 }, '-=0.9')
+        // role: rules draw out from the center while the label fades in
+        .to('.h-rule', { scaleX: 1, duration: 0.7, ease: 'power3.out' }, '-=0.4')
+        .to('.h-role', { opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.5')
         // description: word-by-word wave
-        .to(descWords, { yPercent: 0, opacity: 1, duration: 0.4, ease: 'power3.out', stagger: 0.012 }, '-=0.28')
-        .to(cta,    { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }, '-=0.25')
-        .to(social, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }, '-=0.24')
-        .to(scrollRef.current, { opacity: 1, y: 0, duration: 0.3 }, '-=0.18');
+        .to('.h-desc-word', { yPercent: 0, opacity: 1, duration: 0.45, ease: 'power3.out', stagger: 0.012 }, '-=0.55')
+        .to('.h-status', { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.4')
+        .to('.h-links', { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.3')
+        .to('.h-marquee', { opacity: 1, duration: 0.6, ease: 'power2.out' }, '-=0.25')
+        .to(scrollRef.current, { opacity: 1, duration: 0.4 }, '-=0.3');
 
-      const bounce = gsap.to(scrollRef.current, {
-        y: 7, duration: 1.3, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 2.5, paused: true,
+      // Scroll hint: gentle perpetual bounce.
+      gsap.to(scrollRef.current, {
+        y: 7, duration: 1.3, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 2.2,
       });
-      ScrollTrigger.create({
-        trigger: containerRef.current,
-        start: 'top top', end: 'bottom top',
-        onEnter: () => bounce.play(),
-        onLeave: () => bounce.pause(),
-        onEnterBack: () => bounce.play(),
-        onLeaveBack: () => bounce.pause(),
+
+      // The name stays alive: a slow ripple travels through the letters on a loop.
+      gsap.timeline({ repeat: -1, repeatDelay: 3.4, delay: 3 })
+        .to('.h-letter', {
+          yPercent: -9,
+          duration: 0.32,
+          ease: 'power2.out',
+          stagger: { each: 0.055 },
+        })
+        .to('.h-letter', {
+          yPercent: 0,
+          duration: 0.75,
+          ease: 'elastic.out(1, 0.5)',
+          stagger: { each: 0.055 },
+        }, 0.16);
+
+      // Cinematic hand-off: the hero drifts up and dims as you scroll to About.
+      // Uses yPercent so it composes with the mouse parallax (which sets x/y).
+      gsap.to('.h-name', {
+        yPercent: -16,
+        opacity: 0.2,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 0.5,
+          invalidateOnRefresh: true,
+        },
       });
+
+      // Fine pointers: name drifts gently with the mouse, letters spring on hover.
+      if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        const xTo = gsap.quickTo('.h-name', 'x', { duration: 1.1, ease: 'power3.out' });
+        const yTo = gsap.quickTo('.h-name', 'y', { duration: 1.1, ease: 'power3.out' });
+        const onMove = (e: MouseEvent) => {
+          xTo((e.clientX / window.innerWidth - 0.5) * 18);
+          yTo((e.clientY / window.innerHeight - 0.5) * 10);
+        };
+        window.addEventListener('mousemove', onMove, { passive: true });
+        parallaxCleanup = () => window.removeEventListener('mousemove', onMove);
+
+        gsap.utils.toArray<HTMLElement>('.h-letter').forEach((el) => {
+          const fn = () => {
+            gsap.to(el, {
+              yPercent: -12, duration: 0.16, ease: 'power2.out',
+              onComplete: () => {
+                gsap.to(el, { yPercent: 0, duration: 0.6, ease: 'elastic.out(1, 0.45)' });
+              },
+            });
+          };
+          el.addEventListener('mouseenter', fn);
+          letterHandlers.push({ el, fn });
+        });
+      }
     }, containerRef);
 
-    return () => ctx.revert();
+    return () => {
+      letterHandlers.forEach(({ el, fn }) => el.removeEventListener('mouseenter', fn));
+      parallaxCleanup?.();
+      ctx.revert();
+    };
+  }, [play]);
+
+  // Role line cycles through ROLES, each transition decoding character by character.
+  useEffect(() => {
+    if (!play) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const el = roleRef.current;
+    if (!el) return;
+
+    const CHARS = '#%&/\\<>*+-·:';
+    let roleIdx = 0;
+    let raf = 0;
+    let timer: ReturnType<typeof setTimeout>;
+
+    const scrambleTo = (text: string) => {
+      const from = el.textContent ?? '';
+      const len = Math.max(from.length, text.length);
+      const queue = Array.from({ length: len }, (_, i) => {
+        const start = Math.floor(Math.random() * 18);
+        return {
+          from: from[i] ?? '',
+          to: text[i] ?? '',
+          start,
+          end: start + 8 + Math.floor(Math.random() * 18),
+          char: '',
+        };
+      });
+
+      let frame = 0;
+      const render = () => {
+        let out = '';
+        let done = 0;
+        for (const q of queue) {
+          if (frame >= q.end) { done++; out += q.to; }
+          else if (frame >= q.start) {
+            if (!q.char || Math.random() < 0.3) {
+              q.char = CHARS[Math.floor(Math.random() * CHARS.length)];
+            }
+            out += q.char;
+          } else out += q.from;
+        }
+        el.textContent = out;
+        if (done === queue.length) {
+          timer = setTimeout(cycle, 2800); // hold the readable phrase
+          return;
+        }
+        frame++;
+        raf = requestAnimationFrame(render);
+      };
+      render();
+    };
+
+    const cycle = () => {
+      roleIdx = (roleIdx + 1) % ROLES.length;
+      scrambleTo(ROLES[roleIdx]);
+    };
+
+    timer = setTimeout(cycle, 2800);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(timer);
+    };
   }, [play]);
 
   return (
     <div
       id="home"
       ref={containerRef}
-      className="relative min-h-dvh bg-white dark:bg-black overflow-hidden transition-colors duration-300"
+      className="relative min-h-dvh bg-[#F2EFE9] dark:bg-black overflow-hidden transition-colors duration-300"
     >
-      {/* Background */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-48 -left-48 w-125 h-125 rounded-full bg-gray-100 dark:bg-zinc-900/40 blur-[130px] opacity-60" />
-        <div className="absolute -bottom-32 -right-32 w-105 h-105 rounded-full bg-gray-100 dark:bg-zinc-900/30 blur-[110px] opacity-50" />
-        <div
-          className="absolute inset-0 opacity-[0.025] dark:opacity-[0.04]"
-          style={{ backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '38px 38px' }}
-        />
+      {/* Editorial hairline grid — draws down during the entrance */}
+      <div className="pointer-events-none absolute inset-0 z-0 max-w-[90rem] mx-auto px-6 sm:px-10 lg:px-16">
+        <div className="relative h-full w-full">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <span
+              key={i}
+              className="h-gridline absolute top-0 bottom-0 w-px bg-black/[0.07] dark:bg-white/[0.07] origin-top will-change-transform"
+              style={{ left: `${(i / 4) * 100}%` }}
+            />
+          ))}
+        </div>
       </div>
 
-      {/* Content — single centered column */}
-      <div className="relative z-10 max-w-3xl mx-auto px-6 sm:px-10 min-h-dvh flex flex-col items-center justify-center text-center py-20">
+      {/* Film grain — subtle tactile texture over the whole hero */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-30 opacity-[0.14] mix-blend-multiply dark:mix-blend-screen dark:opacity-[0.09]"
+        style={{ backgroundImage: GRAIN_URL }}
+      />
 
-        {/* Label */}
-        <p className="h-label text-xs font-light tracking-[0.25em] uppercase text-gray-400 dark:text-gray-600 mb-4">
-          01 — Introduction
-        </p>
+      <div className="relative z-10 max-w-[90rem] mx-auto px-6 sm:px-10 lg:px-16 pt-28 sm:pt-30 pb-24 min-h-dvh flex flex-col justify-center">
 
-        {/* Status pill */}
-        <div className="h-pill inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-gray-200 dark:border-zinc-700 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm text-xs font-light text-gray-500 dark:text-gray-400 mb-5 shadow-sm">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" style={{ animation: 'pulse 3s ease-in-out infinite' }} />
-          Open to opportunities
-        </div>
+        {/* Meta row */}
+       
 
-        {/* Name */}
-        <h1 className="h-name flex justify-center text-[clamp(3rem,9vw,6.5rem)] font-semibold tracking-tighter leading-none text-black dark:text-white mb-1">
+        {/* Giant name */}
+        <h1
+          aria-label="Adithya"
+          className="h-name flex justify-center text-[clamp(3.6rem,16.5vw,16rem)] font-semibold uppercase tracking-tight leading-none text-black dark:text-white select-none will-change-transform"
+        >
           {HERO_NAME.map((letter, i) => (
-            <span key={i} className="inline-block overflow-hidden pb-[0.12em] -mb-[0.12em]">
-              <span className="h-name-letter inline-block will-change-transform">{letter}</span>
+            <span
+              key={i}
+              aria-hidden
+              className="inline-block overflow-hidden pt-[0.16em] -mt-[0.16em] pb-[0.1em] -mb-[0.1em]"
+            >
+              <span className="h-letter inline-block will-change-transform">{letter}</span>
             </span>
           ))}
         </h1>
 
-        {/* Avatar */}
-        <div className="h-avatar -my-4 sm:-my-5">
-          <Image
-            src="/Avatar.png"
-            alt="Adithya"
-            width={320}
-            height={320}
-            priority
-            className="w-48 h-48 sm:w-56 sm:h-56 lg:w-64 lg:h-64 object-contain"
-          />
+        {/* Role — small, flanked by thin rules */}
+        <div className="flex items-center gap-4 sm:gap-6 mt-6 sm:mt-8">
+          <span className="h-rule h-px flex-1 bg-current text-black dark:text-white opacity-20 will-change-transform" />
+          <span
+            ref={roleRef}
+            className="h-role text-[11px] sm:text-xs font-light uppercase tracking-[0.4em] text-gray-500 dark:text-gray-400 whitespace-nowrap"
+          >
+            Full Stack · AI · Data Science
+          </span>
+          <span className="h-rule h-px flex-1 bg-current text-black dark:text-white opacity-20 will-change-transform" />
         </div>
 
-        {/* Role typewriter */}
-        <div className="h-role text-base sm:text-lg font-light text-gray-500 dark:text-gray-400 min-h-8 mb-4">
-          <Typewriter
-            options={{
-              strings: ['Aspiring AI / ML Engineer', 'Full-Stack Developer', 'Problem Solver'],
-              autoStart: true,
-              loop: true,
-            }}
-          />
-        </div>
 
-        {/* Description */}
-        <p className="h-desc flex flex-wrap items-end justify-center gap-x-[0.28em] gap-y-1 text-sm sm:text-base font-light leading-relaxed text-gray-500 dark:text-gray-400 max-w-lg mb-6">
-          {DESC_WORDS.map((w, i) => (
-            <span key={i} className="inline-block overflow-hidden pb-[0.1em] -mb-[0.1em]">
+        {/* Bottom row: description + text links */}
+        <div className="mt-8 sm:mt-12 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+          <div>
+            <p className="h-status flex items-center gap-2.5 mb-4 text-[10px] font-light uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">
               <span
-                className={`h-desc-word inline-block will-change-transform ${
-                  w.hl ? 'text-black dark:text-white font-normal' : ''
-                }`}
-              >
-                {w.t}
-              </span>
+                className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"
+                style={{ animation: 'pulse 3s ease-in-out infinite' }}
+              />
+              Open to opportunities
+            </p>
+            <p className="h-desc flex flex-wrap gap-x-[0.28em] gap-y-1 max-w-md text-sm sm:text-base font-light leading-relaxed text-gray-600 dark:text-gray-400">
+              {DESC_WORDS.map((w, i) => (
+                <span key={i} className="inline-block overflow-hidden pb-[0.1em] -mb-[0.1em]">
+                  <span className="h-desc-word inline-block will-change-transform">{w}</span>
+                </span>
+              ))}
+            </p>
+          </div>
+
+          <div className="h-links flex items-center gap-8 shrink-0">
+            {[
+              { label: 'Resume', href: '/Adithya_N.pdf', external: true },
+              { label: 'Contact', href: '#contact', external: false },
+            ].map(({ label, href, external }) => (
+              <Magnet key={label} padding={30} magnetStrength={4}>
+                <a
+                  href={href}
+                  {...(external
+                    ? { target: '_blank', rel: 'noopener noreferrer', download: true }
+                    : {
+                        onClick: (e: React.MouseEvent) => {
+                          e.preventDefault();
+                          document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                        },
+                      })}
+                  className="group inline-flex items-baseline gap-1.5 text-xs font-normal uppercase tracking-[0.22em] text-black dark:text-white"
+                >
+                  <span className="relative">
+                    {label}
+                    <span className="absolute left-0 -bottom-1 h-px w-full bg-current origin-left scale-x-100 group-hover:scale-x-0 transition-transform duration-300" />
+                  </span>
+                  <span className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
+                    ↗
+                  </span>
+                </a>
+              </Magnet>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Marquee strip along the bottom edge */}
+      <div className="h-marquee absolute bottom-0 inset-x-0 border-t border-black/[0.06] dark:border-white/[0.08] overflow-hidden py-3 select-none">
+        <div className="marquee-track flex w-max whitespace-nowrap">
+          {[0, 1].map((copy) => (
+            <span key={copy} aria-hidden={copy === 1} className="flex items-center">
+              {MARQUEE_ITEMS.map((item, i) => (
+                <span
+                  key={i}
+                  className="flex items-center text-[10px] font-light uppercase tracking-[0.3em] text-gray-400 dark:text-zinc-600"
+                >
+                  <span className="px-6">{item}</span>
+                  <span className="text-[8px] opacity-60">✦</span>
+                </span>
+              ))}
             </span>
           ))}
-        </p>
-
-        {/* CTAs */}
-        <div className="h-cta flex flex-wrap items-center justify-center gap-3 mb-6">
-          <button
-            onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-            className="flex items-center gap-2 px-7 py-3 rounded-full bg-black dark:bg-white text-white dark:text-black text-sm font-normal tracking-wide hover:opacity-75 active:scale-95 transition-all duration-200 shadow-lg shadow-black/10"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
-            </svg>
-            Contact Me
-          </button>
-          <a
-            href="/resume.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            download
-            className="flex items-center gap-2 px-7 py-3 rounded-full border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-gray-300 text-sm font-light tracking-wide hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white active:scale-95 transition-all duration-200"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
-            </svg>
-            Resume
-          </a>
-        </div>
-
-        {/* Socials */}
-        <div className="h-social flex items-center gap-2.5">
-          {[
-            {
-              href: 'https://github.com/Adhi1755', label: 'GitHub',
-              icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" /></svg>,
-            },
-            {
-              href: 'https://www.linkedin.com/in/adithyanagamuneendran/', label: 'LinkedIn',
-              icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" /></svg>,
-            },
-            {
-              href: 'https://mail.google.com/mail/?view=cm&fs=1&to=adithya1755@gmail.com', label: 'Email',
-              icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>,
-            },
-          ].map(({ href, label, icon }) => (
-            <a
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={label}
-              className="p-2.5 rounded-full border border-gray-200 dark:border-zinc-800 text-gray-400 dark:text-gray-500 hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-all duration-200"
-            >
-              {icon}
-            </a>
-          ))}
-          <div className="w-px h-5 bg-gray-200 dark:bg-zinc-800 mx-1" />
-          <span className="text-xs font-light text-gray-400 dark:text-zinc-600 tracking-wide">Bengaluru, India</span>
         </div>
       </div>
 
@@ -225,12 +352,10 @@ const MainPage: React.FC<{ play?: boolean }> = ({ play = true }) => {
       <div
         ref={scrollRef}
         onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-gray-300 dark:text-zinc-700 cursor-pointer z-10 select-none"
+        className="absolute bottom-14 left-1/2 -translate-x-1/2 flex items-center gap-2 text-gray-400 dark:text-zinc-600 cursor-pointer z-10 select-none"
       >
-        <span className="text-[10px] font-light tracking-[0.2em] uppercase">Scroll</span>
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
-        </svg>
+        <span className="text-[10px] font-light tracking-[0.25em] uppercase">Scroll</span>
+        <span className="text-xs">↓</span>
       </div>
     </div>
   );
