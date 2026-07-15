@@ -299,7 +299,7 @@ const MainPage: React.FC<{ play?: boolean }> = ({ play = true }) => {
 
           <div className="h-links flex items-center gap-8 shrink-0">
             {[
-              { label: 'Resume', href: '/resume.pdf', external: true },
+              { label: 'Resume', href: '/Adithya_N.pdf', external: true },
               { label: 'Contact', href: '#contact', external: false },
             ].map(({ label, href, external }) => (
               <Magnet key={label} padding={30} magnetStrength={4}>
