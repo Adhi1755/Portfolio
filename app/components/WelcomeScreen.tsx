@@ -7,14 +7,14 @@ export default function WelcomeScreen({ onComplete }: { onComplete: () => void }
   const overlayRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const letterRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const roleRef = useRef<HTMLParagraphElement>(null);
+  const quoteRef = useRef<HTMLParagraphElement>(null);
   const topMetaRef = useRef<HTMLDivElement>(null);
   const bottomMetaRef = useRef<HTMLDivElement>(null);
-  const counterRef = useRef<HTMLSpanElement>(null);
-  const barRef = useRef<HTMLDivElement>(null);
+  const loadingRef = useRef<HTMLSpanElement>(null);
+  const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [visible, setVisible] = useState(true);
 
-  const name = 'ADITHYA'.split('');
+  const greeting = 'WELCOME'.split('');
 
   useEffect(() => {
     // Reduced motion: skip the choreography, show briefly, then hand off.
@@ -27,43 +27,44 @@ export default function WelcomeScreen({ onComplete }: { onComplete: () => void }
     }
 
     const ctx = gsap.context(() => {
-      const counter = { v: 0 };
+      // start hidden / dimmed
+      gsap.set(letterRefs.current, { yPercent: 115, opacity: 0.22 });
+      gsap.set([topMetaRef.current, quoteRef.current, bottomMetaRef.current], { opacity: 0, y: 14 });
 
-      // start hidden / zeroed
-      gsap.set(letterRefs.current, { yPercent: 115 });
-      gsap.set([topMetaRef.current, roleRef.current, bottomMetaRef.current], { opacity: 0, y: 14 });
-      gsap.set(barRef.current, { scaleX: 0 });
+      // Loading label: soft breathing pulse while the word fills.
+      gsap.to(loadingRef.current, {
+        opacity: 0.35,
+        duration: 0.8,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: -1,
+        delay: 0.8,
+      });
 
       gsap.timeline({
         onComplete: () => {
-          // Curtain lift: hand off to the hero as the overlay slides away,
-          // so the hero entrance plays while the curtain rises.
+          // Hand off to the hero, then the column panels swipe up one by one.
           onComplete();
           gsap.timeline({ onComplete: () => setVisible(false) })
-            .to(contentRef.current, { yPercent: -14, duration: 0.9, ease: 'power4.inOut' }, 0)
-            .to(overlayRef.current, { yPercent: -100, duration: 0.9, ease: 'power4.inOut' }, 0);
+            .to(contentRef.current, { opacity: 0, y: -28, duration: 0.4, ease: 'power2.in' }, 0)
+            .to(panelRefs.current, {
+              yPercent: -100,
+              duration: 0.7,
+              ease: 'power4.inOut',
+              stagger: 0.09,
+            }, 0.2);
         },
       })
         // corner meta rows
         .to(topMetaRef.current, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, 0.15)
         .to(bottomMetaRef.current, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, 0.25)
-        // name: per-letter masked slide-up
+        // greeting: per-letter masked slide-up, still dimmed
         .to(letterRefs.current, { yPercent: 0, duration: 0.7, ease: 'power4.out', stagger: 0.05 }, 0.3)
-        .to(roleRef.current, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, '-=0.3')
-        // fake load: counter + hairline progress bar in lockstep
-        .to(counter, {
-          v: 100,
-          duration: 2,
-          ease: 'power2.inOut',
-          onUpdate: () => {
-            if (counterRef.current) {
-              counterRef.current.textContent = String(Math.round(counter.v)).padStart(3, '0');
-            }
-          },
-        }, 0.35)
-        .to(barRef.current, { scaleX: 1, duration: 2, ease: 'power2.inOut' }, 0.35)
-        // hold for a beat before the curtain
-        .to({}, { duration: 0.2 });
+        .to(quoteRef.current, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, '-=0.3')
+        // the loader: WELCOME ignites letter by letter as the progress meter
+        .to(letterRefs.current, { opacity: 1, duration: 0.3, ease: 'power1.inOut', stagger: 0.2 }, '-=0.15')
+        // hold for a beat before the panels lift
+        .to({}, { duration: 0.3 });
     });
 
     return () => ctx.revert();
@@ -75,8 +76,19 @@ export default function WelcomeScreen({ onComplete }: { onComplete: () => void }
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-[500] bg-[#F2EFE9] will-change-transform"
+      className="fixed inset-0 z-[500] will-change-transform"
     >
+      {/* Column panels — the exit swipes them up one by one; the 1px overlap
+          hides subpixel seams between them while idle */}
+      <div aria-hidden className="absolute inset-0 flex">
+        {[0, 1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            ref={(el) => { panelRefs.current[i] = el; }}
+            className="flex-1 -ml-px first:ml-0 bg-[#131110] will-change-transform"
+          />
+        ))}
+      </div>
       <div
         ref={contentRef}
         className="relative h-full w-full flex flex-col justify-between px-6 sm:px-10 lg:px-16 py-7 sm:py-8"
@@ -84,19 +96,19 @@ export default function WelcomeScreen({ onComplete }: { onComplete: () => void }
         {/* Top meta row */}
         <div
           ref={topMetaRef}
-          className="flex items-center justify-between text-[10px] sm:text-[11px] font-light uppercase tracking-[0.3em] text-gray-400 select-none"
+          className="flex items-center justify-between text-[10px] sm:text-[11px] font-light uppercase tracking-[0.3em] text-gray-500 select-none"
         >
           <span>Adithya — Portfolio</span>
           <span>2026</span>
         </div>
 
-        {/* Center: name + role */}
+        {/* Center: greeting + quote */}
         <div className="flex flex-col items-center gap-5 select-none">
           <h1
-            aria-label="Adithya"
-            className="flex justify-center text-[clamp(3rem,12vw,11rem)] font-semibold uppercase tracking-tight leading-none text-black"
+            aria-label="Welcome"
+            className="flex justify-center text-[clamp(3rem,12vw,11rem)] font-semibold uppercase tracking-tight leading-none text-[#F2EFE9]"
           >
-            {name.map((letter, i) => (
+            {greeting.map((letter, i) => (
               <span key={i} aria-hidden className="inline-block overflow-hidden pb-[0.08em] -mb-[0.08em]">
                 <span
                   ref={(el) => { letterRefs.current[i] = el; }}
@@ -108,36 +120,26 @@ export default function WelcomeScreen({ onComplete }: { onComplete: () => void }
             ))}
           </h1>
           <p
-            ref={roleRef}
-            className="text-[11px] sm:text-xs font-light uppercase tracking-[0.4em] text-gray-500"
+            ref={quoteRef}
+            className="max-w-[90vw] text-center text-[11px] sm:text-xs font-light uppercase tracking-[0.35em] text-gray-400"
           >
-            Full Stack · AI · Data Science
+            If it were easy, everyone would do it.
           </p>
         </div>
 
-        {/* Bottom row: loading label + counter */}
+        {/* Bottom: quiet loading label */}
         <div
           ref={bottomMetaRef}
-          className="flex items-end justify-between select-none"
+          className="flex items-center justify-center select-none"
         >
-          <span className="mb-1.5 text-[10px] sm:text-[11px] font-light uppercase tracking-[0.3em] text-gray-400">
-            Loading
-          </span>
           <span
-            ref={counterRef}
-            className="text-4xl sm:text-5xl font-semibold tracking-tight tabular-nums text-black"
+            ref={loadingRef}
+            className="text-[10px] sm:text-[11px] font-light uppercase tracking-[0.3em] text-gray-500"
           >
-            000
+            Loading
           </span>
         </div>
       </div>
-
-      {/* Progress hairline along the very bottom */}
-      <div
-        ref={barRef}
-        className="absolute bottom-0 left-0 h-[2px] w-full bg-black origin-left will-change-transform"
-        style={{ transform: 'scaleX(0)' }}
-      />
     </div>
   );
 }

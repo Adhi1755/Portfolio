@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Image from 'next/image';
+import DownloadLink from './DownloadLink';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -56,9 +57,9 @@ const BIO: { t: string; hl?: boolean }[][] = [
     ...w('and AI-powered products end to end.'),
   ],
   [
-    ...w('Right now I am preparing for placements — strengthening'),
+    ...w("Right now I'm sharpening"),
     ...hl('DSA, SQL, and ML fundamentals'),
-    ...w('— and learning by shipping: hackathons have brought an'),
+    ...w('ahead of placements — and learning by shipping: hackathons have brought an'),
     ...hl('Art & Technology Award'),
     ...w('at NASA Space Apps 2024, a'),
     ...hl('Global Nominee'),
@@ -152,7 +153,7 @@ const AboutMeContainer = () => {
             <h2 className="text-5xl sm:text-6xl lg:text-7xl font-semibold uppercase tracking-tight text-[#F2EFE9] leading-none overflow-hidden pb-[0.08em] -mb-[0.08em]">
               <span className="about-heading-line inline-block will-change-transform">Who I am</span>
             </h2>
-            <div className="about-bio space-y-3 sm:space-y-4 text-md sm:text-md lg:text-lg font-light leading-relaxed text-gray-400">
+            <div className="about-bio space-y-3 sm:space-y-4 text-md sm:text-md lg:text-lg font-light leading-relaxed text-gray-300">
               {BIO.map((para, pi) => (
                 <p key={pi} className="flex flex-wrap gap-x-[0.3em]">
                   {para.map((word, wi) => (
@@ -168,21 +169,9 @@ const AboutMeContainer = () => {
                 onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                 className="btn-shine inline-block bg-[#F2EFE9] text-black px-9 py-4 rounded-sm text-xs font-semibold tracking-[0.18em] uppercase hover:opacity-80 active:scale-95 transition-all duration-200"
               >
-                Contact Me
+                Get in Touch
               </button>
-              <a
-                href="/resume.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                download
-                className="group inline-flex items-baseline gap-1.5 text-xs font-normal uppercase tracking-[0.22em] text-[#F2EFE9]"
-              >
-                <span className="relative">
-                  Resume
-                  <span className="absolute left-0 -bottom-1 h-px w-full bg-current origin-left scale-x-100 group-hover:scale-x-0 transition-transform duration-300" />
-                </span>
-                <span className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">↗</span>
-              </a>
+              <DownloadLink href="/Adithya_N.pdf" className="text-[#F2EFE9]" />
             </div>
           </div>
 

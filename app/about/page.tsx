@@ -90,7 +90,7 @@ const AboutMeContainer = () => {
                 <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" /></svg>
                 Contact Me
               </button>
-              <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" download className="flex items-center gap-2 px-6 py-3 rounded-full border border-gray-300 dark:border-zinc-600 text-gray-700 dark:text-gray-300 font-light text-sm tracking-wide hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-all duration-200">
+              <a href="/Adithya_N.pdf" target="_blank" rel="noopener noreferrer" download className="flex items-center gap-2 px-6 py-3 rounded-full border border-gray-300 dark:border-zinc-600 text-gray-700 dark:text-gray-300 font-light text-sm tracking-wide hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-all duration-200">
                 <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>
                 Resume
               </a>
