@@ -266,10 +266,10 @@ export default function Certifications() {
         <div ref={headerRef} className="mb-12 sm:mb-16 flex flex-col gap-4">
          
           <h2 className="text-5xl sm:text-6xl lg:text-7xl font-semibold uppercase tracking-tight text-black leading-none overflow-hidden pb-[0.08em] -mb-[0.08em]">
-            <span className="cert-heading-line inline-block will-change-transform">Certifications</span>
+            <span className="cert-heading-line inline-block will-change-transform">Recognition</span>
           </h2>
           <p className="text-sm sm:text-base lg:text-lg font-light text-gray-600 max-w-xl leading-relaxed">
-            Certifications and hackathon recognitions that mark the journey so far.
+            Certifications and awards, earned along the way.
           </p>
         </div>
 

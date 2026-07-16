@@ -16,12 +16,15 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { name: 'Home', href: '#home', sectionId: 'home' },
   { name: 'About', href: '#about', sectionId: 'about' },
   { name: 'Projects', href: '#projects', sectionId: 'projects' },
-  { name: 'Certs', href: '#certifications', sectionId: 'certifications' },
+  { name: 'Recognition', href: '#certifications', sectionId: 'certifications' },
   { name: 'Contact', href: '#contact', sectionId: 'contact' },
 ];
+
+// The hero has no nav link (the logo navigates home) but still needs to be
+// observed so no link reads as active while it's on screen.
+const SECTION_IDS = ['home', ...navItems.map((i) => i.sectionId)];
 
 /* ─── Inline SVG icons ────────────────────────────────────────────────────── */
 
@@ -65,11 +68,11 @@ export default function Header() {
       setIsScrolled(window.scrollY > 30);
       // Detect which section sits directly behind the bar
       let behind = 'home';
-      for (const item of navItems) {
-        const el = document.getElementById(item.sectionId);
+      for (const sectionId of SECTION_IDS) {
+        const el = document.getElementById(sectionId);
         if (!el) continue;
         const r = el.getBoundingClientRect();
-        if (r.top <= NAV_Y && r.bottom > NAV_Y) { behind = item.sectionId; break; }
+        if (r.top <= NAV_Y && r.bottom > NAV_Y) { behind = sectionId; break; }
       }
       setOnDark(DARK_SECTIONS.has(behind));
     };
@@ -84,15 +87,15 @@ export default function Header() {
 
     const observers: IntersectionObserver[] = [];
 
-    navItems.forEach((item) => {
-      const el = document.getElementById(item.sectionId);
+    SECTION_IDS.forEach((sectionId) => {
+      const el = document.getElementById(sectionId);
       if (!el) return;
 
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
-              setActiveSection(item.sectionId);
+              setActiveSection(sectionId);
             }
           });
         },
@@ -189,6 +192,7 @@ export default function Header() {
           {/* ── Logo / Brand ── */}
           <button
             onClick={() => scrollTo('home')}
+            aria-label="Back to top"
             className={`select-none text-sm font-semibold uppercase tracking-[0.2em] hover:opacity-60 transition-all duration-300 ${onDark ? 'text-[#F2EFE9]' : 'text-black'}`}
           >
             Adhi<span className={onDark ? 'text-gray-500' : 'text-gray-400'}>®</span>

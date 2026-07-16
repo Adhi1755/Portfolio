@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Magnet from './Magnet/Magnet';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -142,7 +141,7 @@ const ContactComponent = () => {
         <div className="marquee-track flex w-max whitespace-nowrap">
           {[0, 1].map((copy) => (
             <span key={copy} aria-hidden={copy === 1} className="flex items-center">
-              {['Open to Opportunities', 'Software Engineering', 'AI & Machine Learning', 'Data Science', 'Full Stack Development', 'Bengaluru, India'].map((item, i) => (
+              {['Open to Opportunities', 'Software Engineering', 'Machine Learning', 'Data Science', 'Class of 2026', 'Bengaluru, India'].map((item, i) => (
                 <span
                   key={i}
                   className="flex items-center text-[10px] font-light uppercase tracking-[0.3em] text-gray-500"
@@ -228,7 +227,7 @@ const ContactComponent = () => {
           {/* ── Right: the form ── */}
           <div ref={rightRef}>
             <p className="mb-8 text-[10px] font-light uppercase tracking-[0.3em] text-gray-500">
-              Or drop a message
+              Or send a note
             </p>
             {submitStatus === 'success' ? (
               <div className="py-16 flex flex-col gap-4">
@@ -289,7 +288,6 @@ const ContactComponent = () => {
                 />
 
                 <div className="flex items-center gap-4 pt-2">
-                  <Magnet padding={40} magnetStrength={4} disabled={isSubmitting}>
                   <button
                     type="submit"
                     disabled={isSubmitting}
@@ -312,7 +310,6 @@ const ContactComponent = () => {
                       </>
                     )}
                   </button>
-                  </Magnet>
                   <p className="text-xs font-light uppercase tracking-[0.15em] text-gray-500">
                     Replies within 24 h
                   </p>

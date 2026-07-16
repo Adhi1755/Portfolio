@@ -306,10 +306,10 @@ export default function Projects() {
           <div className="flex flex-col gap-4">
            
             <h2 className="text-5xl sm:text-6xl lg:text-7xl font-semibold uppercase tracking-tight text-black leading-none overflow-hidden pb-[0.08em] -mb-[0.08em]">
-              <span className="proj-heading-line inline-block will-change-transform">Projects</span>
+              <span className="proj-heading-line inline-block will-change-transform">Selected Work</span>
             </h2>
             <p className="text-sm sm:text-base lg:text-lg font-light text-gray-600 max-w-xl leading-relaxed">
-              Full-stack builds, AI experiments, and data projects — each one made to learn something new.
+              Full-stack builds, AI systems, and data work — each chosen for what it taught me.
             </p>
           </div>
           <a
@@ -319,7 +319,7 @@ export default function Projects() {
             className="group self-start lg:self-auto inline-flex items-baseline gap-1.5 text-xs font-normal uppercase tracking-[0.22em] text-black"
           >
             <span className="relative">
-              View GitHub
+              All work on GitHub
               <span className="absolute left-0 -bottom-1 h-px w-full bg-current origin-left scale-x-100 group-hover:scale-x-0 transition-transform duration-300" />
             </span>
             <span className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">↗</span>

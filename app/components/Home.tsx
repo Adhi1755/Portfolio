@@ -2,16 +2,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Magnet from './Magnet/Magnet';
+import DownloadLink from './DownloadLink';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const HERO_NAME = 'ADITHYA'.split('');
+const HERO_FIRST = 'ADITHYA'.split('');
+const HERO_LAST = 'NAGAMUNEENDRAN'.split('');
 
 // Role line cycles through these with a character-scramble transition.
 const ROLES = [
   'Full Stack · AI · Data Science',
-  'Final-Year CS (DS) Student',
+  'B.Tech CSE (Data Science) — Class of 2026',
   'Learning by Building',
 ];
 
@@ -20,11 +21,11 @@ const GRAIN_URL =
   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
 
 const MARQUEE_ITEMS = [
-  'Full Stack Development', 'AI & Machine Learning', 'Data Science', 'Next.js', 'Python', 'SQL', 'Bengaluru',
+  'Machine Learning', 'Data Science', 'Full-Stack Engineering', 'Generative AI', 'Python', 'SQL', 'Bengaluru, India',
 ];
 
 const DESC_WORDS =
-  'Final-year CS (Data Science) student who builds across the stack — modern web apps with Next.js and TypeScript, AI-powered products with Python and FastAPI — while strengthening DSA, SQL, and ML fundamentals for what comes next.'.split(' ');
+  "Final-year Computer Science (Data Science) student. I build across the stack — web apps in Next.js and TypeScript, AI products in Python and FastAPI — and pick every project to learn something I couldn't do before.".split(' ');
 
 const MainPage: React.FC<{ play?: boolean }> = ({ play = true }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -247,22 +248,42 @@ const MainPage: React.FC<{ play?: boolean }> = ({ play = true }) => {
       <div className="relative z-10 max-w-[90rem] mx-auto px-6 sm:px-10 lg:px-16 pt-28 sm:pt-30 pb-24 min-h-dvh flex flex-col justify-center">
 
         {/* Meta row */}
-       
+        <div className="h-meta flex items-center justify-between mb-8 sm:mb-10 text-[10px] font-light uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">
+          <span>Bengaluru, IN</span>
+          <span className="tabular-nums">{ist} IST</span>
+        </div>
 
-        {/* Giant name */}
+        {/* Giant name — first name huge, surname stacked beneath */}
         <h1
-          aria-label="Adithya"
-          className="h-name flex justify-center text-[clamp(3.6rem,16.5vw,16rem)] font-semibold uppercase tracking-tight leading-none text-black dark:text-white select-none will-change-transform"
+          aria-label="Adithya Nagamuneendran"
+          className="h-name flex justify-center font-semibold uppercase tracking-tight leading-none text-black dark:text-white select-none will-change-transform"
         >
-          {HERO_NAME.map((letter, i) => (
-            <span
-              key={i}
-              aria-hidden
-              className="inline-block overflow-hidden pt-[0.16em] -mt-[0.16em] pb-[0.1em] -mb-[0.1em]"
-            >
-              <span className="h-letter inline-block will-change-transform">{letter}</span>
+          {/* Shrink-wraps to the first name's width so the surname spreads to match it */}
+          <span className="flex flex-col">
+            <span aria-hidden className="flex justify-center text-[clamp(3.4rem,15.5vw,15rem)]">
+              {HERO_FIRST.map((letter, i) => (
+                <span
+                  key={i}
+                  className="inline-block overflow-hidden pt-[0.16em] -mt-[0.16em] pb-[0.1em] -mb-[0.1em]"
+                >
+                  <span className="h-letter inline-block will-change-transform">{letter}</span>
+                </span>
+              ))}
             </span>
-          ))}
+            <span
+              aria-hidden
+              className="flex justify-between px-[0.5vw] mt-[1vw] sm:mt-[0.6vw] text-[clamp(0.65rem,1.7vw,1.7rem)] font-medium"
+            >
+              {HERO_LAST.map((letter, i) => (
+                <span
+                  key={i}
+                  className="inline-block overflow-hidden pt-[0.16em] -mt-[0.16em] pb-[0.1em] -mb-[0.1em]"
+                >
+                  <span className="h-letter inline-block will-change-transform">{letter}</span>
+                </span>
+              ))}
+            </span>
+          </span>
         </h1>
 
         {/* Role — small, flanked by thin rules */}
@@ -286,9 +307,9 @@ const MainPage: React.FC<{ play?: boolean }> = ({ play = true }) => {
                 className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"
                 style={{ animation: 'pulse 3s ease-in-out infinite' }}
               />
-              Open to opportunities
+              Available — 2026 roles &amp; internships
             </p>
-            <p className="h-desc flex flex-wrap gap-x-[0.28em] gap-y-1 max-w-md text-sm sm:text-base font-light leading-relaxed text-gray-600 dark:text-gray-400">
+            <p className="h-desc flex flex-wrap gap-x-[0.28em] gap-y-1 max-w-md text-sm sm:text-base font-light leading-relaxed text-gray-700 dark:text-gray-400">
               {DESC_WORDS.map((w, i) => (
                 <span key={i} className="inline-block overflow-hidden pb-[0.1em] -mb-[0.1em]">
                   <span className="h-desc-word inline-block will-change-transform">{w}</span>
@@ -298,33 +319,23 @@ const MainPage: React.FC<{ play?: boolean }> = ({ play = true }) => {
           </div>
 
           <div className="h-links flex items-center gap-8 shrink-0">
-            {[
-              { label: 'Resume', href: '/Adithya_N.pdf', external: true },
-              { label: 'Contact', href: '#contact', external: false },
-            ].map(({ label, href, external }) => (
-              <Magnet key={label} padding={30} magnetStrength={4}>
-                <a
-                  href={href}
-                  {...(external
-                    ? { target: '_blank', rel: 'noopener noreferrer', download: true }
-                    : {
-                        onClick: (e: React.MouseEvent) => {
-                          e.preventDefault();
-                          document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-                        },
-                      })}
-                  className="group inline-flex items-baseline gap-1.5 text-xs font-normal uppercase tracking-[0.22em] text-black dark:text-white"
-                >
-                  <span className="relative">
-                    {label}
-                    <span className="absolute left-0 -bottom-1 h-px w-full bg-current origin-left scale-x-100 group-hover:scale-x-0 transition-transform duration-300" />
-                  </span>
-                  <span className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
-                    ↗
-                  </span>
-                </a>
-              </Magnet>
-            ))}
+            <DownloadLink href="/Adithya_N.pdf" className="text-black dark:text-white" />
+            <a
+              href="#contact"
+              onClick={(e: React.MouseEvent) => {
+                e.preventDefault();
+                document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="group inline-flex items-baseline gap-1.5 text-xs font-normal uppercase tracking-[0.22em] text-black dark:text-white"
+            >
+              <span className="relative">
+                Contact
+                <span className="absolute left-0 -bottom-1 h-px w-full bg-current origin-left scale-x-100 group-hover:scale-x-0 transition-transform duration-300" />
+              </span>
+              <span className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
+                ↗
+              </span>
+            </a>
           </div>
         </div>
       </div>
@@ -352,7 +363,7 @@ const MainPage: React.FC<{ play?: boolean }> = ({ play = true }) => {
       <div
         ref={scrollRef}
         onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
-        className="absolute bottom-14 left-1/2 -translate-x-1/2 flex items-center gap-2 text-gray-400 dark:text-zinc-600 cursor-pointer z-10 select-none"
+        className="absolute bottom-14 left-1/2 -translate-x-1/2 flex items-center gap-2 text-gray-400 dark:text-zinc-600 cursor-pointer z-10 select-none transition-opacity duration-300 hover:opacity-60"
       >
         <span className="text-[10px] font-light tracking-[0.25em] uppercase">Scroll</span>
         <span className="text-xs">↓</span>
